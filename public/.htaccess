@@ -1,0 +1,5 @@
+# Compress text responses for this app. PNG/JPEG images are already compressed.
+# mod_deflate negotiates Accept-Encoding and adds Vary: Accept-Encoding.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>

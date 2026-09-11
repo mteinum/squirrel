@@ -78,6 +78,20 @@ Main-branch runs queue instead of cancelling an active deployment. Older hashed 
 
 ## Local verification and troubleshooting
 
+### HTTP compression
+
+`public/.htaccess` enables Apache gzip compression for HTML, CSS, JavaScript, JSON, plain text and SVG through `mod_deflate`. It applies only to the app directory. PNG and JPEG files are not included. The build artifact includes hidden files so this configuration reaches cPanel with each deployment. Apache negotiates compression using `Accept-Encoding` and sets `Vary: Accept-Encoding`.
+
+Verify the live response after changing hosting settings:
+
+```sh
+curl -sS -H 'Accept-Encoding: gzip' -D - -o /dev/null https://app.teinum.no/squirrel/data/census.json
+```
+
+Look for `Content-Encoding: gzip`. If an nginx proxy serves static files directly or removes compression, its configuration may also need updating by the hosting provider. See [Apache compression](https://httpd.apache.org/docs/2.4/mod/mod_deflate.html) and [cPanel compression settings](https://docs.cpanel.net/cpanel/software/optimize-website/).
+
+### Build and deployment checks
+
 ```sh
 npm test
 BASE_PATH=/squirrel/ npm run build

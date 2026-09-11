@@ -51,6 +51,8 @@ jobs:
         with:
           name: squirrel-safari-dist
           path: dist/
+          # Include the app's Apache compression configuration.
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
 
