@@ -11,7 +11,8 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Finish an active main-branch deployment before starting the next one.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -35,12 +36,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Test data transformations and application state
+      - name: Test data, application state and deployment script
         run: npm test
 
       # The build script also runs strict TypeScript checking.
       # Use the committed data snapshots; CI does not refresh remote census data.
       - name: Typecheck and build production assets
+        env:
+          BASE_PATH: /squirrel/
         run: npm run build
 
       - name: Upload production build
@@ -50,3 +53,49 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 14
+
+  deploy:
+    name: Deploy to app.teinum.no/squirrel
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://app.teinum.no/squirrel/
+
+    steps:
+      - name: Check out deployment script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download tested production build
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: squirrel-safari-dist
+          path: dist/
+
+      - name: Deploy using SSH and rsync
+        env:
+          CPANEL_HOST: ${{ vars.CPANEL_HOST || 'backend08.cpanel.center' }}
+          CPANEL_PORT: ${{ vars.CPANEL_PORT || '22' }}
+          CPANEL_USERNAME: ${{ vars.CPANEL_USERNAME }}
+          CPANEL_DEPLOY_PATH: ${{ vars.CPANEL_DEPLOY_PATH }}
+          CPANEL_SSH_KEY: ${{ secrets.CPANEL_SSH_KEY }}
+          CPANEL_PASSWORD: ${{ secrets.CPANEL_PASSWORD }}
+          CPANEL_SSH_KNOWN_HOSTS: ${{ secrets.CPANEL_SSH_KNOWN_HOSTS }}
+        run: bash scripts/deploy-cpanel.sh dist
+
+      - name: Verify the public site serves this build
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 3 \
+            --connect-timeout 10 --max-time 45 \
+            "https://app.teinum.no/squirrel/?deployment=${GITHUB_SHA}" \
+            --output "$RUNNER_TEMP/squirrel-live.html"
+          if ! cmp --silent dist/index.html "$RUNNER_TEMP/squirrel-live.html"; then
+            echo 'The public URL does not serve the uploaded index.html. Check the document root and any HTML cache or rewriting.' >&2
+            exit 1
+          fi

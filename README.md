@@ -80,20 +80,20 @@ The scene caps pixel ratio (2 desktop / 1.5 mobile), reduces mobile decorations,
 
 Discoveries use `squirrel-safari:discoveries:v1` in localStorage. Corrupt/version-mismatched data, stale IDs, security exceptions and quota failures are handled defensively. Reset clears only this experience's discoveries. Progress is not synced between devices or live between open tabs. A deep link uses `?squirrel=<internal-id>` and preserves unrelated URL parameters.
 
-## `/squirrels/` base path
+## Deployment and `/squirrel/` base path
 
-The default Vite base is `./`, so the distribution uses relative assets. For an explicit site subdirectory:
+The GitHub Actions workflow builds for **https://app.teinum.no/squirrel/** and deploys through SSH/rsync after successful main-branch builds. See the [cPanel setup guide](docs/deployment.md) for repository variables, SSH secrets and the document-root setting. The default local Vite base remains `./`.
 
 ```sh
-BASE_PATH=/squirrels/ npm run build
-BASE_PATH=/squirrels/ npm run preview
+BASE_PATH=/squirrel/ npm run build
+BASE_PATH=/squirrel/ npm run preview
 ```
 
-Open **http://127.0.0.1:4173/squirrels/**. Serve the output directory at `/squirrels/` with its trailing slash; query-string sighting links require no special rewrite routes. No deployment infrastructure is included.
+Open **http://127.0.0.1:4173/squirrel/**. Serve the app directory with its trailing slash; query-string sighting links need no special rewrite routes.
 
 ## Continuous integration and dependency updates
 
-The [Build workflow](.github/workflows/build.yml) runs on pull requests, pushes to `main`, and manual dispatches. It uses Node.js 22, installs the lockfile with `npm ci`, runs the data/state tests, and builds the application with strict TypeScript checking. Successful builds upload `dist/` as the `squirrel-safari-dist` artifact for 14 days. CI uses the bundled census snapshots.
+The [Build workflow](.github/workflows/build.yml) runs on pull requests, pushes to `main`, and manual dispatches. It uses Node.js 22, installs the lockfile with `npm ci`, runs the data/state and deployment-script tests, and builds the application for `/squirrel/` with strict TypeScript checking. Successful builds upload `dist/` as the `squirrel-safari-dist` artifact for 14 days. CI uses the bundled census snapshots. Successful pushes or manual runs on `main` then deploy that artifact to cPanel using the configured credentials; pull requests only build and test.
 
 [Dependabot](.github/dependabot.yml) checks npm dependencies and GitHub Actions every Monday at 08:00 Europe/Oslo. Three.js and its types are updated together; other development dependencies group minor and patch updates. Workflow actions are pinned to release commits and updated by Dependabot.
 
@@ -112,3 +112,5 @@ The Three.js scene is a lazy chunk of about 570 kB (148 kB gzip); Vite reports i
 ## Validation record
 
 Validated locally on 2026-09-11: strict TypeScript checking, eight data/state tests, ten Chromium browser scenarios, and a separate production smoke test at `/squirrels/`. Normal scene and deep-link checks reported no browser errors or missing assets. Forced-failure scenarios intentionally produce diagnostic warnings. Desktop (1440×1000), mobile (390×844), and narrow mobile (320×640) were exercised; screenshots are in `artifacts/`. Mount/remount testing checks that canvases, observed targets and scheduled frames are released.
+
+Deployment changes were additionally checked with three SSH deployment-script tests (11 focused tests in total), a production build and a Chromium production/deep-link smoke test at `/squirrel/`. Remote SSH and rsync are stubbed in those tests; they do not verify a live cPanel deployment.
