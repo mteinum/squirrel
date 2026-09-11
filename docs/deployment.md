@@ -6,13 +6,13 @@ The existing site's GitHub variables confirm **backend08.cpanel.center**, accoun
 
 ## 1. Deployment destination
 
-The owner has specified this final upload folder:
+The cPanel folder `/app.teinum.no/squirrel` is relative to the account's home directory. SSH diagnostics confirmed the parent resolves to `/home/web6178/app.teinum.no`. The configured absolute upload path is:
 
 ```text
-CPANEL_DEPLOY_PATH=/app.teinum.no/squirrel
+CPANEL_DEPLOY_PATH=/home/web6178/app.teinum.no/squirrel
 ```
 
-The workflow uses this path exactly; it does not prepend an account home directory or append another `squirrel` folder. Its availability over SSH has not yet been verified. The script requires the parent `/app.teinum.no` to exist and creates the final `squirrel` directory if needed. It rejects destinations without the `/squirrel` suffix and paths containing traversal or shell characters.
+The workflow uses this absolute path exactly and does not append another `squirrel` folder. The script requires the parent directory to exist and creates the final `squirrel` directory if needed. It rejects destinations without the `/squirrel` suffix and paths containing traversal or shell characters. If an absolute parent is missing but its account-relative equivalent exists, it reports the resolved path without uploading files.
 
 **The teinum.no workflow runs `rsync --delete` into `public_html/`.** If the app's document root is inside that directory, the next teinum.no deployment can remove the app. Use a separate document root outside `public_html/`, or first add a directory-specific exclusion to the teinum.no workflow. That repository has not been modified here.
 
@@ -25,7 +25,7 @@ Open [squirrel-safari → Settings → Secrets and variables → Actions](https:
 | Name                 | Value                                           |
 | -------------------- | ----------------------------------------------- |
 | `CPANEL_USERNAME`    | `web6178`                                       |
-| `CPANEL_DEPLOY_PATH` | `/app.teinum.no/squirrel`                       |
+| `CPANEL_DEPLOY_PATH` | `/home/web6178/app.teinum.no/squirrel`          |
 | `CPANEL_HOST`        | Optional; defaults to `backend08.cpanel.center` |
 | `CPANEL_PORT`        | Optional; defaults to `22`                      |
 
