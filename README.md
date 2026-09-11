@@ -2,7 +2,7 @@
 
 A standalone autumn diorama of the **2018 Central Park Squirrel Census**. Explore real sighting locations, open field notes, filter the census, collect five discovery acorns and keep a local notebook. A searchable, paginated index provides the same observations without WebGL.
 
-Built with Vite, strict TypeScript, Three.js and native HTML controls. No Astro, React, backend, account, analytics or external runtime API. Nothing has been deployed.
+Built with Vite, strict TypeScript, Three.js and native HTML controls. No React, backend, account, analytics or external runtime API. Nothing has been deployed.
 
 ## Run locally
 
@@ -77,35 +77,6 @@ At wide zoom, every matching record has an instanced colour marker. Dense/overla
 The scene caps pixel ratio (2 desktop / 1.5 mobile), reduces mobile decorations, renders on demand, pauses when hidden/offscreen, and limits animation to camera transitions. Reduced-motion preferences skip transitions. Cleanup aborts fetches and DOM listeners, removes camera/media/visibility listeners, disconnects resize/intersection observers, cancels frame callbacks and timers, and disposes controls, instances, geometry, materials, shadow maps and both WebGL renderers/contexts.
 
 Discoveries use `squirrel-safari:discoveries:v1` in localStorage. Corrupt/version-mismatched data, stale IDs, security exceptions and quota failures are handled defensively. Reset clears only this experience's discoveries. Progress is not synced between devices or live between open tabs. A deep link uses `?squirrel=<internal-id>` and preserves unrelated URL parameters.
-
-## Mount inside Astro later
-
-**Astro is not installed in this prototype.** Later, copy `src/app.ts`, `src/state.ts`, `src/ui.ts`, `src/data/`, `src/scene/` and `src/styles.css` into your site's source tree. Copy the JSON files into `public/squirrels/data/`. Install Three.js and its types in the host site. Use a client script in the future Astro component:
-
-```astro
-<div id="squirrel-safari"></div>
-<script>
-  import { mountSquirrelSafari } from '../squirrels/app';
-  import '../squirrels/styles.css';
-
-  let cleanup: (() => void) | undefined;
-  function mount() {
-    cleanup?.();
-    const host = document.querySelector<HTMLElement>('#squirrel-safari');
-    cleanup = host
-      ? mountSquirrelSafari(host, { assetBase: '/squirrels/' })
-      : undefined;
-  }
-  mount();
-  document.addEventListener('astro:page-load', mount);
-  document.addEventListener('astro:before-swap', () => {
-    cleanup?.();
-    cleanup = undefined;
-  });
-</script>
-```
-
-The mount function returns cleanup immediately, including while loading. Do not import `main.ts` or the standalone page reset into Astro. Use one experience per page; deep-link parameters and local discoveries are intentionally shared at page/origin scope. The experience defaults to full viewport height; override `.safari` height in the host layout if you need a shorter embed.
 
 ## `/squirrels/` base path
 
