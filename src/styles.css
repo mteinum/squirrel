@@ -1,0 +1,1203 @@
+.safari {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #294638;
+  background: #f5f3e9;
+  font-synthesis: none;
+  font-weight: 400;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+:where(.safari) {
+  * {
+    box-sizing: border-box;
+  }
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+  button,
+  a,
+  input,
+  select,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+    opacity: 0.42;
+  }
+  button {
+    color: inherit;
+  }
+  button svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+  }
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 0;
+  }
+  button:focus-visible,
+  a:focus-visible,
+  select:focus-visible,
+  input:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 3px solid #bf602f;
+    outline-offset: 4px;
+  }
+  button:hover:not(:disabled) {
+    filter: brightness(0.94);
+  }
+  a {
+    color: #2f604b;
+    text-underline-offset: 3px;
+  }
+  h1,
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+  h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -0.7px;
+    font-size: 28px;
+    line-height: 1.15;
+  }
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+  }
+  p {
+    line-height: 1.65;
+  }
+  button,
+  select,
+  input {
+    min-height: 42px;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+.safari {
+  height: 100dvh;
+  min-height: 570px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+:where(.safari) .app-header {
+  height: 94px;
+  padding: 0 34px;
+  border-bottom: 1px solid #dcded1;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #faf9f2;
+  flex-shrink: 0;
+  z-index: 2;
+}
+:where(.safari) .brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+:where(.safari) .brand-mark {
+  height: 46px;
+  width: 46px;
+  display: grid;
+  place-items: center;
+  background: #284c3a;
+  color: #efc28c;
+  border-radius: 50%;
+}
+:where(.safari) .brand-mark svg {
+  width: 31px;
+  height: 31px;
+  transform: rotate(-20deg);
+}
+:where(.safari) .brand h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: -1.1px;
+  line-height: 1;
+}
+:where(.safari) .brand-dot {
+  color: #c36d3c;
+}
+:where(.safari) .brand p {
+  font-size: 8.5px;
+  letter-spacing: 2.6px;
+  margin-top: 9px;
+  color: #6d7a66;
+}
+:where(.safari) .edition {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  color: #697b68;
+}
+:where(.safari) .edition-divider {
+  margin: 0 9px;
+  color: #b4bcaa;
+}
+:where(.safari) .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #bd693d;
+}
+:where(.safari) .header-notebook {
+  background: transparent;
+  font-size: 12px;
+  gap: 10px;
+}
+:where(.safari) .notebook-count {
+  border: 1px solid #d0d7c8;
+  border-radius: 50%;
+  min-width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+}
+:where(.safari) .workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 370px;
+  flex: 1;
+  min-height: 0;
+}
+:where(.safari) .park {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at 43% 40%,
+    #f2f3e8 0,
+    #e6ebdc 70%,
+    #dee4d5 100%
+  );
+  isolation: isolate;
+}
+:where(.safari) .scene {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+:where(.safari) .scene canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+:where(.safari) .park-intro {
+  position: absolute;
+  top: 31px;
+  left: 34px;
+  pointer-events: none;
+}
+:where(.safari) .eyebrow {
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #8a7958;
+  line-height: 1.5;
+}
+:where(.safari) .park-intro h2 {
+  font-size: 36px;
+  margin: 9px 0;
+}
+:where(.safari) .park-intro > p:last-child {
+  font-size: 12px;
+  color: #6a7866;
+}
+:where(.safari) .compass {
+  position: absolute;
+  top: 33px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #6a7c62;
+  font-size: 10px;
+  font-weight: bold;
+  gap: 4px;
+  pointer-events: none;
+}
+:where(.safari) .compass svg {
+  height: 40px;
+  width: 40px;
+  transform: rotate(-29deg);
+}
+:where(.safari) .map-tools {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-25%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+  background: #fafaf0ee;
+  border: 1px solid #d1d8c6;
+  border-radius: 12px;
+  box-shadow: 0 5px 18px #4053340b;
+}
+:where(.safari) .map-tools button {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  background: transparent;
+  font-size: 23px;
+}
+:where(.safari) .map-tools span {
+  height: 1px;
+  background: #dce0d0;
+  width: 24px;
+  margin: 3px;
+}
+:where(.safari) .park-bottom {
+  position: absolute;
+  bottom: 22px;
+  left: 30px;
+  right: 24px;
+  pointer-events: none;
+}
+:where(.safari) .legend {
+  display: flex;
+  gap: 17px;
+  font-size: 10px;
+  margin-bottom: 18px;
+}
+:where(.safari) .legend > span {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+:where(.safari) .fur-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px #faf9ec70;
+}
+:where(.safari) .fur-dot.gray {
+  background: #8f8b80;
+}
+:where(.safari) .fur-dot.cinnamon {
+  background: #b66a3e;
+}
+:where(.safari) .fur-dot.black {
+  background: #393d39;
+}
+:where(.safari) .fur-dot.unknown {
+  background: #d8cdb8;
+  border: 1px solid #9c927a;
+}
+:where(.safari) .map-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  line-height: 1.7;
+  color: #6d7c67;
+  gap: 15px;
+}
+:where(.safari) .map-caption button {
+  pointer-events: auto;
+  font-size: 11px;
+  min-height: 36px;
+  border: 1px solid #bfcab4;
+  border-radius: 30px;
+  background: #f6f7ecd9;
+  padding: 6px 15px;
+  white-space: nowrap;
+}
+:where(.safari) .map-caption button svg {
+  width: 15px;
+}
+:where(.safari) .touch-help {
+  display: none;
+}
+:where(.safari) .panel {
+  border-left: 1px solid #d8ddcd;
+  background: #faf8ef;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+:where(.safari) .panel-tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-bottom: 1px solid #dddfd0;
+  height: 64px;
+  padding: 0 20px;
+  gap: 18px;
+}
+:where(.safari) .panel-tabs button {
+  position: relative;
+  font-size: 11px;
+  gap: 6px;
+  background: transparent;
+  white-space: nowrap;
+  color: #7c816f;
+  flex: 1;
+  padding: 0;
+}
+:where(.safari) .panel-tabs button svg {
+  width: 16px;
+  height: 16px;
+}
+:where(.safari) .panel-tabs button.active {
+  color: #294d38;
+}
+:where(.safari) .panel-tabs button.active:after {
+  content: "";
+  position: absolute;
+  height: 3px;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  border-radius: 3px;
+  background: #345741;
+}
+:where(.safari) .panel-tabs .mission-count {
+  font-size: 9px;
+}
+:where(.safari) .panel-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 29px 26px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d6c5 transparent;
+}
+:where(.safari) .section-heading h2 {
+  margin: 9px 0 12px;
+  font-size: 29px;
+  max-width: 260px;
+}
+:where(.safari) .section-heading > p:last-child,
+:where(.safari) [data-pane="missions"] > p:not(.eyebrow),
+:where(.safari) [data-pane="notebook"] > p:not(.eyebrow),
+:where(.safari) [data-pane="list"] > p:not(.eyebrow) {
+  font-size: 12px;
+  color: #76816c;
+  margin: 12px 0 20px;
+}
+:where(.safari) .primary {
+  background: #31563f;
+  color: #faf7e9;
+  padding: 12px 17px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+:where(.safari) .surprise {
+  width: 100%;
+  justify-content: flex-start;
+  min-height: 46px;
+}
+:where(.safari) .surprise svg:last-child:not(:first-child) {
+  margin-left: auto;
+}
+:where(.safari) .filter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 27px 0 10px;
+}
+:where(.safari) .filter-heading h3 {
+  font-size: 12px;
+}
+:where(.safari) .text-button {
+  padding: 0;
+  min-height: 32px;
+  font-size: 10px;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: #6a795f;
+}
+:where(.safari) .filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 12px;
+}
+:where(.safari) label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #6c775f;
+}
+:where(.safari) select,
+:where(.safari) input {
+  width: 100%;
+  margin-top: 7px;
+  border: 1px solid #d6d9c7;
+  background: #fffef6;
+  border-radius: 5px;
+  color: #354d37;
+  padding: 0 10px;
+  font-size: 12px;
+  min-width: 0;
+}
+:where(.safari) select {
+  padding-right: 20px;
+}
+:where(.safari) .filter-help {
+  font-size: 9px;
+  color: #828975;
+  margin-top: 12px;
+  line-height: 1.6;
+}
+:where(.safari) .matching {
+  margin-top: 21px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0d1;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+:where(.safari) .matching-number {
+  font-family: Georgia, serif;
+  font-size: 37px;
+  color: #35553b;
+  letter-spacing: -1.5px;
+}
+:where(.safari) .matching > div {
+  font-size: 10px;
+  line-height: 1.8;
+}
+:where(.safari) .matching > div > span {
+  font-size: 9px;
+  color: #717a65;
+}
+:where(.safari) .list-link {
+  font-size: 11px;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  padding: 9px 0;
+  color: #526c48;
+}
+:where(.safari) .list-link svg {
+  width: 15px;
+}
+:where(.safari) .mission-teaser {
+  display: flex;
+  gap: 13px;
+  border: 1px solid #ddd9ba;
+  background: #efeddc;
+  border-radius: 8px;
+  padding: 17px 14px;
+  margin-top: 20px;
+}
+:where(.safari) .teaser-acorn {
+  color: #b27a3e;
+  width: 30px;
+  flex-shrink: 0;
+  transform: rotate(-18deg);
+}
+:where(.safari) .mission-teaser h3 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.3;
+}
+:where(.safari) .mission-teaser p {
+  font-size: 10px;
+  color: #87836d;
+  margin-top: 6px;
+}
+:where(.safari) .mission-teaser button {
+  color: #56704b;
+  margin-top: 2px;
+}
+:where(.safari) .field-footer {
+  margin-top: 27px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0d3;
+  color: #737c67;
+  font-size: 9px;
+  line-height: 1.7;
+}
+:where(.safari) .field-footer > p {
+  padding-left: 24px;
+}
+:where(.safari) .field-footer strong {
+  font-weight: 400;
+  color: #737d66;
+}
+:where(.safari) .footer-leaf {
+  float: left;
+  color: #889472;
+  font-size: 17px;
+}
+:where(.safari) .field-footer details {
+  margin-top: 13px;
+}
+:where(.safari) .field-footer summary {
+  font-size: 10px;
+  cursor: pointer;
+  color: #72806b;
+  padding: 5px 0;
+}
+:where(.safari) .field-footer details p {
+  margin: 9px 0;
+}
+:where(.safari) .map-status {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 24px;
+  background: #fffceeef;
+  border: 1px solid #d3d5bd;
+  border-radius: 12px;
+  max-width: 360px;
+  width: 80%;
+  text-align: center;
+  line-height: 1.6;
+  box-shadow: 0 10px 40px #42563510;
+}
+:where(.safari) .map-status button {
+  margin-top: 15px;
+}
+:where(.safari) .toast {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  max-width: min(520px, 90vw);
+  padding: 14px 22px;
+  background: #284b39;
+  color: #fff9e9;
+  border: 1px solid #87996f;
+  border-radius: 9px;
+  box-shadow: 0 10px 30px #24342130;
+  font-size: 12px;
+  z-index: 10;
+  line-height: 1.5;
+}
+:where(.safari) .empty-state,
+:where(.safari) .notebook-empty {
+  padding: 20px;
+  border: 1px dashed #c9cbb3;
+  border-radius: 7px;
+  margin: 15px 0;
+  font-size: 12px;
+  color: #7d816a;
+}
+:where(.safari) .mission-progress {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 24px 0;
+}
+:where(.safari) .mission-progress span {
+  font-family: Georgia, serif;
+  font-size: 27px;
+}
+:where(.safari) .mission-progress progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #ae753a;
+}
+:where(.safari) .mission-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 19px 0;
+  border-top: 1px solid #e0deca;
+}
+:where(.safari) .acorn-badge {
+  width: 47px;
+  height: 47px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ececde;
+  color: #afb49b;
+  display: grid;
+  place-items: center;
+}
+:where(.safari) .acorn-badge svg {
+  width: 28px;
+  height: 28px;
+}
+:where(.safari) .complete .acorn-badge {
+  background: #ead7ac;
+  color: #a06d33;
+  box-shadow: 0 0 0 3px #f5edd8;
+}
+:where(.safari) .mission-row small {
+  font-size: 8px;
+  letter-spacing: 1.2px;
+  color: #9a9b85;
+}
+:where(.safari) .complete small {
+  color: #9b713b;
+}
+:where(.safari) .mission-row h3 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 18px;
+  margin: 4px 0;
+}
+:where(.safari) .mission-row p {
+  font-size: 10px;
+  color: #838973;
+}
+:where(.safari) .mission-row:last-child {
+  margin-bottom: 20px;
+}
+:where(.safari) .observation-row {
+  display: flex;
+  gap: 11px;
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+  border-bottom: 1px solid #e3e1d1;
+  background: transparent;
+  padding: 17px 1px;
+  min-height: 70px;
+}
+:where(.safari) .observation-row > span:not(.row-arrow) {
+  min-width: 0;
+}
+:where(.safari) .observation-row strong {
+  font-family: monospace;
+  font-size: 11px;
+  display: block;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+}
+:where(.safari) .observation-row small {
+  display: block;
+  font-size: 9px;
+  color: #717b66;
+  margin-top: 7px;
+}
+:where(.safari) .row-arrow {
+  margin-left: auto;
+  font-size: 14px;
+  color: #7b8c6e;
+}
+:where(.safari) .reset-progress {
+  margin-top: 20px;
+  color: #9c623c;
+}
+:where(.safari) .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 20px;
+}
+:where(.safari) .pagination span {
+  font-size: 10px;
+  color: #8c917d;
+}
+:where(.safari) .secondary {
+  border: 1px solid #cdd3bf;
+  background: #f7f6e9;
+  border-radius: 5px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+:where(.safari) .pagination .secondary {
+  font-size: 10px;
+  padding: 8px;
+}
+:where(.safari) .list-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 10px;
+}
+:where(.safari) .search-label {
+  margin-top: 18px;
+}
+:where(.safari) .search-label input {
+  min-height: 44px;
+}
+:where(.safari) .back {
+  margin-top: -14px;
+  margin-bottom: 8px;
+}
+:where(.safari) .observation-hero {
+  position: relative;
+  background: radial-gradient(ellipse at center, #f0e6ca, #e8e8d6);
+  border-radius: 8px;
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+:where(.safari) .portrait {
+  height: 180px;
+  width: 100%;
+  font-size: 100px;
+  text-align: center;
+}
+:where(.safari) .portrait canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+:where(.safari) .specimen-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 8px;
+  letter-spacing: 1.4px;
+  color: #8d8c72;
+}
+:where(.safari) [data-card] h2 {
+  font-size: 27px;
+  margin: 8px 0;
+}
+:where(.safari) .observation-id {
+  font-family: monospace;
+  font-size: 11px;
+  color: #9b865f;
+}
+:where(.safari) .facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 12px;
+  padding: 19px 0;
+  margin: 18px 0;
+  border-top: 1px solid #e0dfca;
+  border-bottom: 1px solid #e0dfca;
+}
+:where(.safari) .facts dt {
+  font-size: 9px;
+  color: #77806b;
+  margin-bottom: 6px;
+}
+:where(.safari) .facts dd {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+:where(.safari) [data-card] h3 {
+  font-size: 12px;
+  margin: 16px 0 10px;
+}
+:where(.safari) .behaviour-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+:where(.safari) .behaviour-badge {
+  font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #e7ebda;
+  color: #5e7853;
+}
+:where(.safari) .all-behaviours {
+  margin: 16px 0;
+  font-size: 10px;
+  color: #7e866f;
+}
+:where(.safari) .all-behaviours summary {
+  cursor: pointer;
+  padding: 7px 0;
+}
+:where(.safari) .flag-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+:where(.safari) .flag-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
+:where(.safari) .flag-list dd {
+  margin: 0;
+}
+:where(.safari) .observer-notes {
+  padding: 5px 15px 15px;
+  background: #f2eddb;
+  border-left: 2px solid #c59551;
+  border-radius: 0 5px 5px 0;
+}
+:where(.safari) .note-label {
+  font-size: 8px;
+  color: #9b8b67;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 12px;
+}
+:where(.safari) .note-text {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+:where(.safari) .fine-print {
+  font-size: 9px;
+  color: #73755f;
+  line-height: 1.6;
+  margin: 12px 0;
+}
+:where(.safari) .selected-notice {
+  font-size: 10px;
+  background: #efe0bd;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 12px;
+}
+:where(.safari) .card-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+}
+:where(.safari) .card-actions button {
+  width: 100%;
+}
+:where(.safari) [data-pane="observation"] > .surprise {
+  margin-top: 12px;
+  justify-content: center;
+}
+:where(.safari) [data-share-fallback] {
+  margin-top: 15px;
+}
+:where(.safari) .skip-link {
+  position: fixed;
+  top: -100px;
+  left: 15px;
+  z-index: 20;
+  padding: 14px;
+  background: #fffdf1;
+}
+:where(.safari) .skip-link:focus {
+  top: 10px;
+}
+:where(.safari) .scene-unavailable .map-tools,
+:where(.safari) .scene-unavailable .compass {
+  display: none;
+}
+:where(.safari) .scene-unavailable .scene {
+  background: repeating-linear-gradient(
+    35deg,
+    transparent,
+    transparent 40px,
+    #7c946110 40px,
+    #7c946110 41px
+  );
+}
+@media (min-width: 1500px) {
+  :where(.safari) .workspace {
+    grid-template-columns: minmax(0, 1fr) 410px;
+  }
+  :where(.safari) .panel-scroll {
+    padding: 34px;
+  }
+  :where(.safari) .park-intro {
+    top: 40px;
+    left: 45px;
+  }
+  :where(.safari) .park-intro h2 {
+    font-size: 43px;
+  }
+}
+@media (max-width: 1050px) {
+  :where(.safari) .edition {
+    display: none;
+  }
+  :where(.safari) .header-notebook {
+    margin-left: auto;
+  }
+  :where(.safari) .workspace {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+  :where(.safari) .panel-scroll {
+    padding: 25px 22px;
+  }
+  :where(.safari) .panel-tabs {
+    gap: 12px;
+    padding: 0 17px;
+  }
+  :where(.safari) .park-intro {
+    left: 23px;
+    top: 25px;
+  }
+  :where(.safari) .park-intro h2 {
+    font-size: 29px;
+  }
+  :where(.safari) .park-intro > p:last-child {
+    max-width: 230px;
+  }
+  :where(.safari) .compass {
+    right: 16px;
+  }
+  :where(.safari) .park-bottom {
+    left: 20px;
+    right: 16px;
+  }
+  :where(.safari) .map-caption > span {
+    max-width: 190px;
+    font-size: 9px;
+  }
+  :where(.safari) .legend {
+    gap: 12px;
+  }
+}
+@media (max-width: 760px) {
+  .safari {
+    height: 100dvh;
+    min-height: 550px;
+  }
+  :where(.safari) .app-header {
+    height: 70px;
+    padding: 0 18px;
+    gap: 10px;
+  }
+  :where(.safari) .brand-mark {
+    height: 35px;
+    width: 35px;
+  }
+  :where(.safari) .brand-mark svg {
+    width: 25px;
+    height: 25px;
+  }
+  :where(.safari) .brand {
+    gap: 9px;
+  }
+  :where(.safari) .brand h1 {
+    font-size: 24px;
+  }
+  :where(.safari) .brand p {
+    font-size: 6.5px;
+    letter-spacing: 1.8px;
+    margin-top: 6px;
+  }
+  :where(.safari) .header-notebook {
+    gap: 5px;
+  }
+  :where(.safari) .header-notebook > span:not(.notebook-count) {
+    display: none;
+  }
+  :where(.safari) .header-notebook svg {
+    height: 19px;
+    width: 19px;
+  }
+  :where(.safari) .workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(245px, 1fr) minmax(220px, 43%);
+  }
+  :where(.safari) .panel {
+    border-left: 0;
+    border-top: 1px solid #cbd3bd;
+    border-radius: 18px 18px 0 0;
+    margin-top: -10px;
+    z-index: 2;
+    box-shadow: 0 -6px 22px #45623908;
+  }
+  :where(.safari) .panel-tabs {
+    height: 48px;
+    padding: 0 28px;
+    gap: 24px;
+  }
+  :where(.safari) .panel-tabs button {
+    font-size: 11px;
+  }
+  :where(.safari) .panel-scroll {
+    padding: 20px 23px 28px;
+  }
+  :where(.safari) .section-heading h2 {
+    max-width: none;
+    font-size: 26px;
+  }
+  :where(.safari) .section-heading > p:last-child {
+    margin-bottom: 15px;
+  }
+  :where(.safari) .section-heading .eyebrow {
+    font-size: 8px;
+  }
+  :where(.safari) .park-intro {
+    top: 19px;
+    left: 20px;
+  }
+  :where(.safari) .park-intro .eyebrow {
+    font-size: 7px;
+    letter-spacing: 1.6px;
+  }
+  :where(.safari) .park-intro h2 {
+    font-size: 25px;
+    margin: 6px 0;
+  }
+  :where(.safari) .park-intro > p:last-child {
+    font-size: 10px;
+    max-width: 260px;
+  }
+  :where(.safari) .compass {
+    top: 16px;
+    right: 14px;
+    font-size: 8px;
+  }
+  :where(.safari) .compass svg {
+    height: 27px;
+    width: 27px;
+  }
+  :where(.safari) .map-tools {
+    right: 13px;
+    top: 47%;
+    padding: 2px;
+  }
+  :where(.safari) .map-tools button {
+    height: 33px;
+    width: 33px;
+    min-height: 33px;
+    font-size: 22px;
+  }
+  :where(.safari) .map-tools button svg {
+    height: 17px;
+    width: 17px;
+  }
+  :where(.safari) .park-bottom {
+    bottom: 21px;
+    left: 18px;
+    right: 14px;
+  }
+  :where(.safari) .legend {
+    margin-bottom: 9px;
+    gap: 12px;
+    font-size: 8px;
+  }
+  :where(.safari) .fur-dot {
+    height: 7px;
+    width: 7px;
+  }
+  :where(.safari) .map-caption > span {
+    display: none;
+  }
+  :where(.safari) .map-caption {
+    justify-content: flex-end;
+  }
+  :where(.safari) .map-caption button {
+    font-size: 9px;
+    min-height: 30px;
+    padding: 4px 10px;
+  }
+  :where(.safari) .park-bottom .legend {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    max-width: 175px;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 0;
+  }
+  :where(.safari) .map-caption button svg {
+    height: 12px;
+    width: 12px;
+  }
+  :where(.safari) .filter-heading {
+    margin-top: 21px;
+  }
+  :where(.safari) .filters {
+    gap: 12px;
+  }
+  :where(.safari) .matching {
+    margin-top: 16px;
+  }
+  :where(.safari) .field-footer {
+    margin-top: 22px;
+  }
+  :where(.safari) .toast {
+    bottom: 15px;
+    width: calc(100% - 30px);
+    font-size: 11px;
+    padding: 12px 16px;
+  }
+  :where(.safari) .portrait {
+    height: 170px;
+  }
+  :where(.safari) .map-status {
+    font-size: 11px;
+    top: 55%;
+    padding: 17px;
+  }
+  :where(.safari) .touch-help {
+    display: inline;
+  }
+  :where(.safari) .mission-teaser {
+    margin-top: 14px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(.safari) button {
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  :where(.safari) .complete .acorn-badge {
+    animation: acorn-pop 0.35s ease-out;
+  }
+  @keyframes acorn-pop {
+    from {
+      transform: scale(0.8) rotate(-12deg);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  :where(.safari) .app-header {
+    padding: 0 12px;
+    gap: 8px;
+  }
+  :where(.safari) .brand {
+    gap: 7px;
+  }
+  :where(.safari) .brand h1 {
+    font-size: 21px;
+  }
+  :where(.safari) .brand-mark {
+    height: 31px;
+    width: 31px;
+  }
+  :where(.safari) .brand p {
+    font-size: 6px;
+    letter-spacing: 1.3px;
+  }
+  :where(.safari) .panel-tabs {
+    gap: 16px;
+    padding: 0 18px;
+  }
+}
+
+:where(.safari) .mobile-gestures {
+  display: none;
+}
+@media (max-width: 760px) {
+  :where(.safari) .mobile-gestures {
+    display: inline;
+    font-size: 8px;
+  }
+}

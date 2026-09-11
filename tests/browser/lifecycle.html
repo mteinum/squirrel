@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mount lifecycle test</title>
+  </head>
+  <body>
+    <button id="mount">Mount experience</button
+    ><button id="unmount">Unmount experience</button>
+    <div id="fixture"></div>
+    <script type="module">
+      import { mountSquirrelSafari } from "../../src/app.ts";
+      import "../../src/styles.css";
+      let cleanup;
+      document.querySelector("#mount").onclick = () => {
+        cleanup?.();
+        cleanup = mountSquirrelSafari(document.querySelector("#fixture"), {
+          assetBase: "/",
+        });
+      };
+      document.querySelector("#unmount").onclick = () => {
+        cleanup?.();
+        cleanup = undefined;
+      };
+    </script>
+  </body>
+</html>
