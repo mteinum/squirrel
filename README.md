@@ -2,7 +2,7 @@
 
 A standalone autumn diorama of the **2018 Central Park Squirrel Census**. Explore real sighting locations, open field notes, filter the census, collect five discovery acorns and keep a local notebook. A searchable, paginated index provides the same observations without WebGL.
 
-Built with Vite, strict TypeScript, Three.js and native HTML controls. No React, backend, account, analytics or external runtime API. Nothing has been deployed.
+Built with Vite, strict TypeScript, Three.js and native HTML controls. No React, backend, account, analytics or external runtime API.
 
 ![Squirrel Safari showing the autumnal Central Park diorama and observation filters](artifacts/desktop.png)
 
