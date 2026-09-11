@@ -91,6 +91,12 @@ BASE_PATH=/squirrels/ npm run preview
 
 Open **http://127.0.0.1:4173/squirrels/**. Serve the output directory at `/squirrels/` with its trailing slash; query-string sighting links require no special rewrite routes. No deployment infrastructure is included.
 
+## Continuous integration and dependency updates
+
+The [Build workflow](.github/workflows/build.yml) runs on pull requests, pushes to `main`, and manual dispatches. It uses Node.js 22, installs the lockfile with `npm ci`, runs the data/state tests, and builds the application with strict TypeScript checking. Successful builds upload `dist/` as the `squirrel-safari-dist` artifact for 14 days. CI uses the bundled census snapshots.
+
+[Dependabot](.github/dependabot.yml) checks npm dependencies and GitHub Actions every Monday at 08:00 Europe/Oslo. Three.js and its types are updated together; other development dependencies group minor and patch updates. Workflow actions are pinned to release commits and updated by Dependabot.
+
 ## Browser checks
 
 ```sh
