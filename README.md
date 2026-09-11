@@ -73,10 +73,11 @@ At wide zoom, every matching record has an instanced colour marker. Dense/overla
 - `src/state.ts`: AND filters, selection, random matching selection, mission rules and versioned defensive local storage.
 - `src/ui.ts`: static interface template and safe text-based record rendering.
 - `src/app.ts`: exported mount/cleanup, loading and fallback states, state-to-interface wiring, deep links and clipboard handling.
+- `src/celebration.ts`: brief badge rewards using native browser animations, with capped acorn/leaf/spark particles and a static reduced-motion alternative. Newly earned missions trigger rewards; restored or repeated discoveries do not. Multiple badges share one reward, and the fifth badge completes the trail. Escape, reset, tab hiding and cleanup cancel the effect.
 - `src/scene/scene.ts`, `squirrel.ts`: lazy-loaded Three.js scene, shared procedural resources, instancing, raycasting, camera and portrait.
 - `src/styles.css`: experience styles; `src/standalone.css`: standalone page reset.
 
-The scene caps pixel ratio (2 desktop / 1.5 mobile), reduces mobile decorations, renders on demand, pauses when hidden/offscreen, and limits animation to camera transitions. Reduced-motion preferences skip transitions. Cleanup aborts fetches and DOM listeners, removes camera/media/visibility listeners, disconnects resize/intersection observers, cancels frame callbacks and timers, and disposes controls, instances, geometry, materials, shadow maps and both WebGL renderers/contexts.
+The scene caps pixel ratio (2 desktop / 1.5 mobile), reduces mobile decorations, renders on demand, pauses when hidden/offscreen, and limits its animation to camera transitions. Badge celebrations are separate DOM overlays lasting under four seconds, with at most 44 particles (20 on compact park views) and no render loop. Reduced-motion preferences skip transitions and display a stationary reward card. Cleanup aborts fetches and DOM listeners, removes camera/media/visibility listeners, disconnects resize/intersection observers, cancels frame callbacks, timers and reward animations, and disposes controls, instances, geometry, materials, shadow maps and both WebGL renderers/contexts.
 
 Discoveries use `squirrel-safari:discoveries:v1` in localStorage. Corrupt/version-mismatched data, stale IDs, security exceptions and quota failures are handled defensively. Reset clears only this experience's discoveries. Progress is not synced between devices or live between open tabs. A deep link uses `?squirrel=<internal-id>` and preserves unrelated URL parameters.
 
@@ -116,3 +117,13 @@ The Three.js scene is a lazy chunk of about 570 kB (148 kB gzip); Vite reports i
 Validated locally on 2026-09-11: strict TypeScript checking, eight data/state tests, ten Chromium browser scenarios, and a separate production smoke test at `/squirrels/`. Normal scene and deep-link checks reported no browser errors or missing assets. Forced-failure scenarios intentionally produce diagnostic warnings. Desktop (1440×1000), mobile (390×844), and narrow mobile (320×640) were exercised; screenshots are in `artifacts/`. Mount/remount testing checks that canvases, observed targets and scheduled frames are released.
 
 Deployment changes were additionally checked with three SSH deployment-script tests (11 focused tests in total), a production build and a Chromium production/deep-link smoke test at `/squirrel/`. Remote SSH and rsync are stubbed in those tests; they do not verify a live cPanel deployment.
+
+Badge celebrations have five additional Chromium scenarios covering first-time rewards, repeated/restored discoveries, simultaneous badges, desktop/mobile layouts, expiry, reduced motion without WebGL, resetting, the full collection and unmount/remount cleanup. Reward screenshots are saved as `artifacts/badge-celebration-*.png`.
+
+## License
+
+The application code is licensed under the [MIT License](LICENSE). Copyright © 2026 Morten Teinum. Third-party dependencies, census data and geographic data retain their original licenses and source terms; see the provenance information above.
+
+## Contact
+
+Morten Teinum — [morten@teinum.no](mailto:morten@teinum.no)

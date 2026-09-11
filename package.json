@@ -2,6 +2,11 @@
   "name": "squirrel-safari",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "Morten Teinum",
+    "email": "morten@teinum.no"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",

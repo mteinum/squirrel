@@ -21,6 +21,7 @@ import {
   acorn,
 } from "./ui";
 import type { SafariScene } from "./scene/scene";
+import { createCelebration } from "./celebration";
 export interface MountOptions {
   assetBase?: string;
   disableWebGL?: boolean;
@@ -46,6 +47,7 @@ export function mountSquirrelSafari(
     host.querySelectorAll<T>(selector);
   const status = get(".map-status"),
     toast = get(".toast");
+  const celebration = createCelebration(get(".park"));
   const base = options.assetBase ?? import.meta.env.BASE_URL;
   const assetUrl = (name: string) =>
     new URL(
@@ -184,7 +186,7 @@ export function mountSquirrelSafari(
   }
   function select(id: string, fly = true, changeUrl = true, focus = true) {
     if (!state) return;
-    const before = state.completed.size;
+    const before = state.completed;
     const observation = state.select(id);
     if (!observation) {
       notify(
@@ -206,10 +208,16 @@ export function mountSquirrelSafari(
       url.searchParams.set("squirrel", id);
       history.replaceState(null, "", url);
     }
-    if (state.completed.size > before)
+    const complete = state.completed;
+    const earned = missions.filter(
+      (mission) => complete.has(mission.id) && !before.has(mission.id),
+    );
+    if (earned.length) {
+      celebration.show(earned, complete);
       notify(
-        `Acorn collected! ${state.completed.size} of 5 discoveries complete.`,
+        `${complete.size === missions.length ? "All five acorns collected!" : earned.length === 1 ? "Acorn collected!" : `${earned.length} acorns collected!`} ${earned.map((mission) => mission.title).join("; ")}. ${complete.size} of ${missions.length} discoveries complete.`,
       );
+    }
   }
   function readLink() {
     const id = new URL(location.href).searchParams.get("squirrel");
@@ -316,6 +324,7 @@ export function mountSquirrelSafari(
           get(".panel-scroll").scrollTop = 0;
           break;
         case "reset-progress":
+          celebration.clear();
           state?.discovered.clear();
           persist();
           updateProgress();
@@ -483,6 +492,7 @@ export function mountSquirrelSafari(
     disposed = true;
     abort.abort();
     clearTimeout(toastTimer);
+    celebration.dispose();
     scene?.dispose();
     scene = null;
     host.replaceChildren();

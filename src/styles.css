@@ -562,6 +562,22 @@
 :where(.safari) .field-footer details p {
   margin: 9px 0;
 }
+:where(.safari) .creator-contact {
+  display: grid;
+  gap: 2px;
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px solid #e0e0d3;
+  color: #294638;
+  font-size: 11px;
+  font-style: normal;
+}
+:where(.safari) .creator-contact a {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+}
 :where(.safari) .map-status {
   position: absolute;
   top: 48%;
@@ -595,6 +611,179 @@
   font-size: 12px;
   z-index: 10;
   line-height: 1.5;
+}
+:where(.safari) .badge-celebration {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+:where(.safari) .celebration-card {
+  position: relative;
+  z-index: 1;
+  width: min(350px, calc(100% - 48px));
+  padding: 23px 24px 20px;
+  border: 1px solid #c69849;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #fffdf2, #f5ead0);
+  box-shadow:
+    0 16px 55px #263c3840,
+    inset 0 0 0 5px #fffdf280;
+  text-align: center;
+}
+:where(.safari) .celebration-kicker {
+  color: #80612c;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+:where(.safari) .celebration-medal {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin: 17px auto 16px;
+  border: 1px solid #ddbb68;
+  border-radius: 50%;
+  color: #a2652f;
+  background: radial-gradient(circle at 35% 25%, #fff1b8, #e9b34f);
+  box-shadow:
+    0 0 0 6px #e4b65120,
+    0 4px 15px #bc8a3230;
+}
+:where(.safari) .celebration-medal svg {
+  width: 49px;
+  height: 49px;
+}
+:where(.safari) .celebration-title {
+  font-size: 28px;
+}
+:where(.safari) .celebration-detail {
+  margin-top: 8px;
+  color: #677057;
+  font-size: 12px;
+  line-height: 1.5;
+}
+:where(.safari) .celebration-collection {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 17px 0 7px;
+  color: #c6c5ae;
+}
+:where(.safari) .celebration-collection svg {
+  width: 21px;
+  height: 21px;
+}
+:where(.safari) .celebration-collection .collected {
+  color: #b47b32;
+}
+:where(.safari) .celebration-progress {
+  font-size: 10px;
+  color: #7e7354;
+}
+:where(.safari) .trail-complete {
+  background: linear-gradient(140deg, #315b42, #1f3e30);
+  color: #fff5d7;
+  box-shadow:
+    0 16px 55px #263c3840,
+    inset 0 0 0 5px #e9c76b15;
+}
+:where(.safari) .trail-complete .celebration-kicker,
+:where(.safari) .trail-complete .celebration-detail,
+:where(.safari) .trail-complete .celebration-progress {
+  color: #eddbab;
+}
+:where(.safari) .trail-complete .collected {
+  color: #efc765;
+}
+:where(.safari) .celebration-halo {
+  position: absolute;
+  width: min(650px, 120%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  opacity: 0;
+  background: repeating-conic-gradient(
+    from 0deg,
+    #efd38b80 0deg 5deg,
+    transparent 5deg 20deg
+  );
+  mask-image: radial-gradient(circle, #000 5%, transparent 70%);
+}
+:where(.safari) .celebration-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 15px;
+  opacity: 0;
+  background: currentColor;
+}
+:where(.safari) .celebration-particle.leaf {
+  border-radius: 1px 9px 1px 9px;
+}
+:where(.safari) .celebration-particle.spark {
+  width: 15px;
+  height: 15px;
+  clip-path: polygon(
+    50% 0,
+    62% 38%,
+    100% 50%,
+    62% 62%,
+    50% 100%,
+    38% 62%,
+    0 50%,
+    38% 38%
+  );
+}
+:where(.safari) .celebration-particle.tiny-acorn {
+  width: 22px;
+  height: 22px;
+  background: none;
+}
+:where(.safari) .celebration-particle svg {
+  width: 100%;
+  height: 100%;
+}
+@media (max-width: 760px) {
+  :where(.safari) .celebration-card {
+    width: min(310px, calc(100% - 48px));
+    padding: 14px 16px 12px;
+    border-radius: 17px;
+  }
+  :where(.safari) .celebration-kicker {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  :where(.safari) .celebration-medal {
+    width: 50px;
+    height: 50px;
+    margin: 10px auto;
+  }
+  :where(.safari) .celebration-medal svg {
+    width: 34px;
+    height: 34px;
+  }
+  :where(.safari) .celebration-title {
+    font-size: 23px;
+  }
+  :where(.safari) .celebration-detail {
+    font-size: 10px;
+    margin-top: 5px;
+  }
+  :where(.safari) .celebration-collection {
+    margin: 10px 0 4px;
+  }
+  :where(.safari) .celebration-collection svg {
+    width: 18px;
+    height: 18px;
+  }
+  :where(.safari) .celebration-progress {
+    font-size: 9px;
+  }
 }
 :where(.safari) .empty-state,
 :where(.safari) .notebook-empty {
@@ -1153,17 +1342,6 @@
     transition:
       background 0.15s,
       color 0.15s;
-  }
-  :where(.safari) .complete .acorn-badge {
-    animation: acorn-pop 0.35s ease-out;
-  }
-  @keyframes acorn-pop {
-    from {
-      transform: scale(0.8) rotate(-12deg);
-    }
-    to {
-      transform: scale(1);
-    }
   }
 }
 
