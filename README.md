@@ -4,6 +4,8 @@ A standalone autumn diorama of the **2018 Central Park Squirrel Census**. Explor
 
 Built with Vite, strict TypeScript, Three.js and native HTML controls. No React, backend, account, analytics or external runtime API. Nothing has been deployed.
 
+![Squirrel Safari showing the autumnal Central Park diorama and observation filters](artifacts/desktop.png)
+
 ## Run locally
 
 Requires **Node.js 22.12+**, npm and a modern browser. From this directory:
