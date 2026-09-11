@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Squirrel Safari analytics test</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import { mountSquirrelSafari } from "../../src/app.ts";
+      import { mountAnalytics } from "../../src/analytics.ts";
+      import "../../src/styles.css";
+      import "../../src/standalone.css";
+      const root = document.querySelector("#app");
+      const cleanup = mountSquirrelSafari(root, {
+        assetBase: "/",
+        disableWebGL: true,
+      });
+      const cleanupAnalytics = mountAnalytics(root);
+      window.cleanupAnalyticsFixture = () => {
+        cleanupAnalytics();
+        cleanup();
+      };
+    </script>
+  </body>
+</html>

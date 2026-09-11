@@ -2,7 +2,7 @@
 
 A standalone autumn diorama of the **2018 Central Park Squirrel Census**. Explore real sighting locations, open field notes, filter the census, collect five discovery acorns and keep a local notebook. A searchable, paginated index provides the same observations without WebGL.
 
-Built with Vite, strict TypeScript, Three.js and native HTML controls. No React, backend, account, analytics or external runtime API.
+Built with Vite, strict TypeScript, Three.js and native HTML controls. No React, backend or account. Census data is bundled locally; optional Google Analytics loads only after visitor consent.
 
 ![Squirrel Safari showing the autumnal Central Park diorama and observation filters](artifacts/desktop.png)
 
@@ -73,6 +73,7 @@ At wide zoom, every matching record has an instanced colour marker. Dense/overla
 - `src/state.ts`: AND filters, selection, random matching selection, mission rules and versioned defensive local storage.
 - `src/ui.ts`: static interface template and safe text-based record rendering.
 - `src/app.ts`: exported mount/cleanup, loading and fallback states, state-to-interface wiring, deep links and clipboard handling.
+- `src/analytics.ts`, `analytics-consent.ts`: standalone-page Google Analytics and defensive, expiring consent storage. Analytics is separate from the embeddable application and disabled in the normal development entry point.
 - `src/celebration.ts`: brief badge rewards using native browser animations, with capped acorn/leaf/spark particles and a static reduced-motion alternative. Newly earned missions trigger rewards; restored or repeated discoveries do not. Multiple badges share one reward, and the fifth badge completes the trail. Escape, reset, tab hiding and cleanup cancel the effect.
 - `src/scene/scene.ts`, `squirrel.ts`: lazy-loaded Three.js scene, shared procedural resources, instancing, raycasting, camera and portrait.
 - `src/styles.css`: experience styles; `src/standalone.css`: standalone page reset.
@@ -93,6 +94,10 @@ BASE_PATH=/squirrel/ npm run preview
 Open **http://127.0.0.1:4173/squirrel/**. Serve the app directory with its trailing slash; query-string sighting links need no special rewrite routes.
 
 Facebook and other link previews use a custom illustrated share image and static metadata in `index.html`. See [social sharing](docs/social-sharing.md) for the artwork, public URL configuration, preview limitations and Facebook cache refresh instructions.
+
+## Optional analytics
+
+Production builds use the same Google Analytics measurement ID as `teinum.no`, with an explicit opt-in before loading Google's script. Visitors can choose **Necessary only** or **Allow analytics**, and reopen **Privacy settings** in the field-guide footer. Choices are saved in this browser for one year; the notebook works independently. See [analytics setup and verification](docs/analytics.md).
 
 ## Continuous integration and dependency updates
 
