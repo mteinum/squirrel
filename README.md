@@ -91,6 +91,8 @@ BASE_PATH=/squirrel/ npm run preview
 
 Open **http://127.0.0.1:4173/squirrel/**. Serve the app directory with its trailing slash; query-string sighting links need no special rewrite routes.
 
+Facebook and other link previews use a custom illustrated share image and static metadata in `index.html`. See [social sharing](docs/social-sharing.md) for the artwork, public URL configuration, preview limitations and Facebook cache refresh instructions.
+
 ## Continuous integration and dependency updates
 
 The [Build workflow](.github/workflows/build.yml) runs on pull requests, pushes to `main`, and manual dispatches. It uses Node.js 22, installs the lockfile with `npm ci`, runs the data/state and deployment-script tests, and builds the application for `/squirrel/` with strict TypeScript checking. Successful builds upload `dist/` as the `squirrel-safari-dist` artifact for 14 days. CI uses the bundled census snapshots. Successful pushes or manual runs on `main` then deploy that artifact to cPanel using the configured credentials; pull requests only build and test.

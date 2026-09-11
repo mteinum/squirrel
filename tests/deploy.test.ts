@@ -16,7 +16,7 @@ const script = fileURLToPath(
   new URL("../scripts/deploy-cpanel.sh", import.meta.url),
 );
 const config = {
-  CPANEL_HOST: "backend08.cpanel.center",
+  CPANEL_HOST: "cpanel.example.com",
   CPANEL_PORT: "22",
   CPANEL_USERNAME: "safari_test",
   CPANEL_DEPLOY_PATH: "/home/safari_test/app.teinum.no/squirrel",
@@ -33,6 +33,7 @@ function run(extra: NodeJS.ProcessEnv, dist = "/nonexistent-squirrel-build") {
 }
 test("deployment rejects missing credentials, panel port and unsafe destination paths", () => {
   for (const extra of [
+    { CPANEL_HOST: "" },
     { CPANEL_SSH_KEY: "" },
     { CPANEL_USERNAME: "" },
     { CPANEL_PORT: "2083" },
@@ -103,7 +104,7 @@ test("encrypted-key deployment uploads assets before publishing index and cleans
         SAFARI_TEST_LOG: log,
         CPANEL_SSH_KEY: secret,
         CPANEL_PASSWORD: "safari-test-passphrase",
-        CPANEL_SSH_KNOWN_HOSTS: `backend08.cpanel.center ${readFileSync(`${key}.pub`, "utf8")}`,
+        CPANEL_SSH_KNOWN_HOSTS: `cpanel.example.com ${readFileSync(`${key}.pub`, "utf8")}`,
       },
       dist,
     );

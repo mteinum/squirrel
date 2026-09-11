@@ -3,12 +3,12 @@
 set -Eeuo pipefail
 
 fail() { printf 'Deployment error: %s\n' "$*" >&2; exit 1; }
-required=(CPANEL_USERNAME CPANEL_DEPLOY_PATH CPANEL_SSH_KEY CPANEL_SSH_KNOWN_HOSTS)
+required=(CPANEL_HOST CPANEL_USERNAME CPANEL_DEPLOY_PATH CPANEL_SSH_KEY CPANEL_SSH_KNOWN_HOSTS)
 for name in "${required[@]}"; do
   [[ -n "${!name:-}" ]] || fail "Set $name in GitHub Actions secrets/variables."
 done
 
-host=${CPANEL_HOST:-backend08.cpanel.center}
+host=$CPANEL_HOST
 port=${CPANEL_PORT:-22}
 user=$CPANEL_USERNAME
 destination=${CPANEL_DEPLOY_PATH%/}

@@ -78,7 +78,7 @@ jobs:
 
       - name: Deploy using SSH and rsync
         env:
-          CPANEL_HOST: ${{ vars.CPANEL_HOST || 'backend08.cpanel.center' }}
+          CPANEL_HOST: ${{ vars.CPANEL_HOST }}
           CPANEL_PORT: ${{ vars.CPANEL_PORT || '22' }}
           CPANEL_USERNAME: ${{ vars.CPANEL_USERNAME }}
           CPANEL_DEPLOY_PATH: ${{ vars.CPANEL_DEPLOY_PATH }}
