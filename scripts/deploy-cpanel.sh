@@ -83,7 +83,16 @@ chmod 700 "$ssh_dir/transport"
 parent=${destination%/*}
 # Values interpolated into remote commands are restricted to safe path characters above.
 ssh -F "$ssh_dir/config" squirrel-deploy \
-  "command -v rsync >/dev/null || { echo 'The hosting account needs rsync and SSH shell access.' >&2; exit 1; }; test -d '$parent' || { echo 'The parent document root does not exist.' >&2; exit 1; }; mkdir -p -- '$destination'"
+  "command -v rsync >/dev/null || { echo 'The hosting account needs rsync and SSH shell access.' >&2; exit 1; }
+   if ! test -d '$parent'; then
+     echo 'The parent document root does not exist.' >&2
+     if test -d \"\$HOME/${parent#/}\"; then
+       printf 'Account-relative parent resolves to: '
+       (cd -- \"\$HOME/${parent#/}\" && pwd -P)
+     fi
+     exit 1
+   fi
+   mkdir -p -- '$destination'"
 
 # Keep older hashed assets for open browser tabs. Do not delete any remote files.
 rsync -rlz --delay-updates --chmod=D755,F644 --exclude=/index.html \
