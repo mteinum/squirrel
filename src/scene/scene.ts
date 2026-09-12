@@ -239,6 +239,41 @@ export function createScene(
   let vision = false;
   const pinHost =
     host.parentElement!.querySelector<HTMLElement>("[data-pins]")!;
+  const perkSign =
+    host.parentElement!.querySelector<HTMLButtonElement>(".perk-sign")!;
+  const bottomControls =
+    host.parentElement!.querySelector<HTMLElement>(".park-bottom")!;
+  const boundary = polygons.flatMap((polygon) => polygon[0]);
+  const eastEdge = Math.max(...boundary.map((point) => point.x));
+  const westEdge = Math.min(...boundary.map((point) => point.x));
+  const southEdge = Math.max(...boundary.map((point) => point.z));
+  const northEdge = Math.min(...boundary.map((point) => point.z));
+  // An imaginary detour beyond the southeast boundary, never an observation.
+  const perkAnchor = new THREE.Vector3(
+    eastEdge + (eastEdge - westEdge) * 0.4,
+    0,
+    southEdge - (southEdge - northEdge) * 0.06,
+  );
+  const perkScreen = new THREE.Vector3();
+  function positionPerk() {
+    perkScreen.copy(perkAnchor).project(camera);
+    const x = ((perkScreen.x + 1) * host.clientWidth) / 2;
+    const y = ((1 - perkScreen.y) * host.clientHeight) / 2;
+    const compact = matchMedia("(max-width: 760px)").matches;
+    // Let the sign leave the viewport naturally when the camera explores elsewhere.
+    const width = compact ? 138 : 214;
+    const left = x - width * 0.15;
+    perkSign.hidden =
+      perkScreen.z < -1 ||
+      perkScreen.z > 1 ||
+      left < 12 ||
+      left + width > host.clientWidth - 12 ||
+      y < 210 ||
+      // The placard sits 14px above its post; keep its lower edge clear.
+      y - 10 > bottomControls.offsetTop;
+    perkSign.style.left = `${x}px`;
+    perkSign.style.top = `${y}px`;
+  }
   let pins: { observation: Observation; button: HTMLButtonElement }[] = [];
   function createPin(observation: Observation, active = false) {
     const button = document.createElement("button");
@@ -422,6 +457,7 @@ export function createScene(
     }
     renderer.render(scene, camera);
     positionPins();
+    positionPerk();
     if (tween) requestRender();
   }
   function changed() {
@@ -756,6 +792,7 @@ export function createScene(
       renderer.forceContextLoss();
       renderer.domElement.remove();
       pinHost.replaceChildren();
+      perkSign.hidden = true;
       portrait?.dispose();
       portrait?.forceContextLoss();
       portrait?.domElement.remove();

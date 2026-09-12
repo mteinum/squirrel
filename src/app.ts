@@ -52,6 +52,20 @@ export function mountSquirrelSafari(
     host.querySelectorAll<T>(selector);
   const status = get(".map-status"),
     toast = get(".toast");
+  const perkNote = get<HTMLDialogElement>(".perk-note");
+  perkNote.addEventListener(
+    "close",
+    () => {
+      const sign = get<HTMLButtonElement>(".perk-sign");
+      sign.setAttribute("aria-expanded", "false");
+      if (!sign.hidden) sign.focus({ preventScroll: true });
+      else
+        get<HTMLButtonElement>('[data-action="reset-view"]').focus({
+          preventScroll: true,
+        });
+    },
+    { signal },
+  );
   const celebration = createCelebration(get(".park"));
   const base = options.assetBase ?? import.meta.env.BASE_URL;
   const assetUrl = (name: string) =>
@@ -446,6 +460,10 @@ export function mountSquirrelSafari(
         return;
       }
       switch (target.dataset.action) {
+        case "central-perk":
+          target.setAttribute("aria-expanded", "true");
+          perkNote.showModal();
+          break;
         case "sheet":
           setSheet(!get(".panel").classList.contains("expanded"));
           break;

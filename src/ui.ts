@@ -25,6 +25,8 @@ export const acorn =
   '<svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M8 14h16c0 9-5 13-8 15-4-2-8-6-8-15Z" fill="currentColor" opacity=".7"/><path d="M5 14c0-11 22-11 22 0H5Z" fill="currentColor"/><path d="M16 6q0-4 4-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
 export const icon = (name: string) => {
   const paths: Record<string, string> = {
+    coffee:
+      '<path d="M4 8h12v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Zm12 1h2a3 3 0 1 1 0 6h-2M2 22h18M7 2v3m5-3v3"/>',
     binoculars:
       '<path d="m4 5-2 11a4 4 0 0 0 8 0V7L8 4H5Zm16 0 2 11a4 4 0 0 1-8 0V7l2-3h3ZM10 10h4M10 14h4"/><circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/>',
     backpack:
@@ -57,6 +59,20 @@ function filterRow(
   return `<fieldset class="filter-row" data-filter-row="${name}"><legend>${icon(symbol)} ${title}</legend><div class="filter-options"><div class="filter-chips" data-chips="${name}"></div><details class="more-filter"><summary aria-label="More ${title.toLowerCase()} options">+</summary><label>All ${title.toLowerCase()} options<select name="${name}" aria-label="${title}"><option value="">${first}</option>${name === "shift" ? "<option>AM</option><option>PM</option><option>Unknown</option>" : ""}</select></label></details></div></fieldset>`;
 }
 
+function centralPerk(): string {
+  return `<button type="button" class="perk-sign" data-action="central-perk" aria-label="Open Central Perk Easter egg" aria-haspopup="dialog" aria-expanded="false" aria-controls="central-perk-note" hidden>
+    ${icon("coffee")}<span><strong>Central Perk <span class="perk-mobile-arrow" aria-hidden="true">→</span></strong><span class="perk-directions">97 squirrel steps · 4 human blocks →</span><small>Fictional detour</small></span>
+  </button>
+  <dialog class="perk-note" id="central-perk-note" aria-labelledby="perk-title" aria-describedby="perk-description">
+    <p class="eyebrow">AN ENTIRELY FICTIONAL DETOUR</p>
+    <h2 id="perk-title" tabindex="-1" autofocus>${icon("coffee")} Central Perk</h2>
+    <p class="perk-subtitle">A suspiciously familiar coffeehouse.</p>
+    <p id="perk-description">Unfortunately, our field researchers have been unable to locate it in Central Park.</p>
+    <p class="perk-footnote">Possibly fictional.<br>Possibly run by squirrels.</p>
+    <form method="dialog"><button class="secondary" type="submit">Return to the squirrels ${icon("arrow")}</button></form>
+  </dialog>`;
+}
+
 export function shell(): string {
   return `<div class="safari">
     <a class="skip-link" href="#safari-panel">Skip to observation controls</a>
@@ -70,6 +86,7 @@ export function shell(): string {
         <div class="compass" aria-hidden="true"><span>N</span><svg viewBox="0 0 40 40"><path d="m20 3 7 30-7-7-7 7Z" fill="currentColor"/></svg></div>
         <div class="map-tools" role="group" aria-label="Camera controls"><button data-action="reset-view" aria-label="Reset view" title="Reset view">${icon("reset")}</button><button data-action="top" aria-label="Top-down view" title="Top-down view">${icon("top")}</button><span></span><button data-action="zoom-in" aria-label="Zoom in" title="Zoom in">+</button><button data-action="zoom-out" aria-label="Zoom out" title="Zoom out">−</button></div>
         <div class="map-pins" data-pins></div>
+        ${centralPerk()}
         <div class="vision-message" role="status" hidden><strong>SQUIRREL VISION™</strong><span data-vision-count></span></div>
         <article class="featured-squirrel" aria-label="Featured squirrel" hidden><button class="featured-close" data-action="close-featured" aria-label="Close featured squirrel">×</button><div class="featured-illustration">${squirrelArt}<span>FIELD PORTRAIT · ILLUSTRATED</span></div><div class="featured-story" aria-live="polite"><p class="eyebrow">FEATURED SQUIRREL</p><h2 data-nickname></h2><p class="featured-note" data-featured-note></p><small>A playful field nickname</small></div><dl class="featured-facts" data-featured-facts></dl><button class="featured-details text-button" data-view="observation">Open field observation ${icon("arrow")}</button></article>
         <div class="park-bottom"><div class="legend" aria-label="Fur colour legend"></div><div class="map-caption"><span>Drag to orbit · Scroll to zoom · Right-drag to pan</span><div class="map-capsules"><button data-action="vision" aria-pressed="false">${icon("binoculars")} Squirrel Vision <span class="toggle-track" aria-hidden="true"></span></button><button data-view="list">${icon("list")} Observation list</button></div></div></div>
