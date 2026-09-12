@@ -99,7 +99,7 @@ export function mountSquirrelSafari(
     if (focus) {
       const title = get<HTMLElement>(`[data-pane="${next}"] h2`);
       title.tabIndex = -1;
-      title.focus({ preventScroll: true });
+      title.focus({ preventScroll: !matchMedia("(max-width: 760px)").matches });
     }
   }
   function setSheet(expanded: boolean) {
@@ -194,6 +194,7 @@ export function mountSquirrelSafari(
     get(".park").classList.add("has-selection");
     get("[data-nickname]").textContent = nickname(observation);
     get("[data-featured-note]").textContent = activity.note;
+    get("[data-featured-behaviours]").textContent = activity.label;
     get(".featured-illustration").setAttribute(
       "data-fur",
       observation.fur ?? "Unknown",
@@ -468,6 +469,12 @@ export function mountSquirrelSafari(
           setSheet(!get(".panel").classList.contains("expanded"));
           break;
         case "close-featured":
+          scene?.clearSelection();
+          if (state) state.selected = null;
+          const url = new URL(location.href);
+          url.searchParams.delete("squirrel");
+          history.replaceState(null, "", url);
+          if (!get('[data-pane="observation"]').hidden) setView("filters");
           get(".featured-squirrel").hidden = true;
           get(".park").classList.remove("has-selection");
           get<HTMLButtonElement>('[data-action="vision"]').focus({

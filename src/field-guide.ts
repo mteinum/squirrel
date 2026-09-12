@@ -51,21 +51,44 @@ export function squirrelActivity(o: Observation): {
   label: string;
   note: string;
 } {
-  if (o.behaviours.eating)
-    return { label: "Eating", note: "Snack-related activity detected." };
-  if (o.behaviours.running)
-    return {
-      label: "Running",
-      note: "Highly mobile. Possibly late for something.",
-    };
-  if (o.behaviours.climbing)
-    return { label: "Climbing", note: "Taking the scenic route. Vertically." };
-  if (o.behaviours.foraging)
-    return { label: "Foraging", note: "An independent snack investigation." };
-  const active = behaviourKeys.find((key) => o.behaviours[key] === true);
+  const copy: Record<string, string> = {
+    running: "Highly mobile. Possibly late for something.",
+    chasing: "An urgent squirrel matter is underway.",
+    climbing: "Vertical ambitions detected.",
+    eating: "Snack-related activity detected.",
+    foraging: "Searching the premises for snacks.",
+    approaches: "Curiosity levels are concerning.",
+    indifferent: "Human presence deemed irrelevant.",
+    runs_from: "Strategic retreat initiated.",
+    kuks: "Strong opinions detected.",
+    quaas: "An extended squirrel statement.",
+    moans: "Expressing concerns at length.",
+    tail_flags: "Tail-based communication intensifies.",
+    tail_twitches: "Minor tail negotiations underway.",
+  };
+  const active = behaviourKeys.filter((key) => o.behaviours[key] === true);
+  const primary = (
+    [
+      "eating",
+      "running",
+      "foraging",
+      "climbing",
+      "chasing",
+      "runs_from",
+      "approaches",
+      "indifferent",
+      "kuks",
+      "quaas",
+      "moans",
+      "tail_flags",
+      "tail_twitches",
+    ] as const
+  ).find((key) => o.behaviours[key] === true);
   return {
-    label: active ? fieldLabel(active) : "Not recorded",
-    note: "A small resident. A considerable presence.",
+    label: active.length ? active.map(fieldLabel).join(" · ") : "Not recorded",
+    note: primary
+      ? copy[primary]
+      : "A small resident. A considerable presence.",
   };
 }
 

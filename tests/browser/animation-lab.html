@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Squirrel animation review</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fixture"></div>
+    <script type="module">
+      import * as THREE from "three";
+      import { mountSquirrelSafari } from "../../src/app.ts";
+      import "../../src/styles.css";
+      // Test-only inspection of the real scene. This page is excluded from the production build.
+      const afterRender = THREE.Scene.prototype.onAfterRender;
+      window.animationReview = {
+        renders: 0,
+        actors: 0,
+        position: null,
+        joints: {},
+        waves: 0,
+        calls: 0,
+      };
+      THREE.Scene.prototype.onAfterRender = function (renderer, scene, camera) {
+        const actors = [];
+        scene.traverse((node) => {
+          if (node.name === "selected-squirrel") {
+            window.animationReviewScene = scene;
+            if (node.children.length) actors.push(node);
+          }
+        });
+        if (actors.length) {
+          const actor = actors[0],
+            model = actor.children[0];
+          const point = new THREE.Vector3();
+          model.getWorldPosition(point);
+          point.project(camera);
+          window.animationReview = {
+            renders: window.animationReview.renders + 1,
+            actors: actors.length,
+            position: {
+              x: model.position.x,
+              y: model.position.y,
+              z: model.position.z,
+            },
+            joints: Object.fromEntries(
+              ["body", "head", "pawL", "pawR", "tail", "tailTip"].map(
+                (name) => [
+                  name,
+                  model.getObjectByName(name)?.rotation.toArray().slice(0, 3),
+                ],
+              ),
+            ),
+            waves: model.children.filter((n) => n.type === "Mesh" && n.visible)
+              .length,
+            screen: {
+              x: ((point.x + 1) * renderer.domElement.clientWidth) / 2,
+              y: ((1 - point.y) * renderer.domElement.clientHeight) / 2,
+            },
+            calls: renderer.info.render.calls,
+          };
+        }
+        if (!actors.length && window.animationReviewScene === scene)
+          window.animationReview.actors = 0;
+        return afterRender.call(this, renderer, scene, camera);
+      };
+      window.inspectMarkerScales = () => {
+        const mesh = window.animationReviewScene.children.find(
+          (node) =>
+            node.isInstancedMesh && node.geometry.type === "SphereGeometry",
+        );
+        const matrix = new THREE.Matrix4(),
+          hidden = [];
+        for (let i = 0; i < mesh.count; i++) {
+          mesh.getMatrixAt(i, matrix);
+          if (
+            matrix.elements[0] === 0 &&
+            matrix.elements[5] === 0 &&
+            matrix.elements[10] === 0
+          )
+            hidden.push(i);
+        }
+        return hidden;
+      };
+      window.unmountAnimationReview = mountSquirrelSafari(
+        document.querySelector("#fixture"),
+        { assetBase: "/" },
+      );
+    </script>
+  </body>
+</html>

@@ -4,6 +4,10 @@ import { project, insidePolygon } from "../data/geo";
 import type { Observation, ParkData } from "../data/types";
 import { furColours, squirrelResources } from "./squirrel";
 import { nickname, squirrelActivity } from "../field-guide";
+import {
+  createSquirrelAnimator,
+  type SquirrelAnimator,
+} from "./animation/controller";
 export interface SafariScene {
   setObservations(observations: Observation[]): void;
   select(observation: Observation, fly?: boolean): void;
@@ -11,6 +15,7 @@ export interface SafariScene {
   topDown(): void;
   zoom(factor: number): void;
   setVision(enabled: boolean): void;
+  clearSelection(): void;
   dispose(): void;
 }
 export function createScene(
@@ -315,7 +320,11 @@ export function createScene(
     const positions: { x: number; y: number }[] = [];
     for (const { observation, button } of pins) {
       const p = project(observation.longitude, observation.latitude);
-      const screen = new THREE.Vector3(p.x, 5, p.z).project(camera);
+      const height =
+        observation.id === selectedObservation?.id
+          ? selectedModel.scale.y * 3.5 + 1
+          : 5;
+      const screen = new THREE.Vector3(p.x, height, p.z).project(camera);
       const x = ((screen.x + 1) * host.clientWidth) / 2;
       const y = ((1 - screen.y) * host.clientHeight) / 2;
       const blocked = positions.some(
@@ -362,7 +371,13 @@ export function createScene(
   selected.add(halo);
   selected.visible = false;
   scene.add(selected);
+  let animator: SquirrelAnimator | null = null;
+  let animationWake = 0;
+  const reaction = host.parentElement!.querySelector<HTMLElement>(
+    "[data-squirrel-reaction]",
+  )!;
   const selectedModel = new THREE.Group();
+  selectedModel.name = "selected-squirrel";
   selectedModel.position.y = 1;
   selectedModel.scale.setScalar(3);
   selected.add(selectedModel);
@@ -406,7 +421,11 @@ export function createScene(
       const p = project(o.longitude, o.latitude);
       dummy.position.set(p.x, 1.4, p.z);
       dummy.rotation.set(0, 0, 0);
-      dummy.scale.setScalar(size * (vision ? 1.65 : 1));
+      dummy.scale.setScalar(
+        o.id === selectedObservation?.id && animator
+          ? 0
+          : size * (vision ? 1.65 : 1),
+      );
       dummy.updateMatrix();
       markers.setMatrixAt(i, dummy.matrix);
     });
@@ -435,7 +454,7 @@ export function createScene(
       });
     }
     if (selectedObservation) {
-      const scale = THREE.MathUtils.clamp(distance / 120, 1.5, 5);
+      const scale = THREE.MathUtils.clamp(distance / 55, 2.1, 2.8);
       selectedModel.scale.setScalar(scale);
       halo.scale.setScalar(scale / 1.7);
     }
@@ -455,10 +474,31 @@ export function createScene(
       if (t === 1) tween = null;
       controls.update();
     }
+    let animationMoving = false;
+    clearTimeout(animationWake);
+    animationWake = 0;
+    if (animator) {
+      const step = animator.update(now, camera, reducedMotion.matches);
+      animationMoving = step.moving;
+      reaction.hidden = !step.reaction;
+      reaction.textContent = step.reaction;
+      if (step.reaction) {
+        const point = new THREE.Vector3(0, 2.3, 0);
+        selectedModel.children[0]?.localToWorld(point);
+        point.project(camera);
+        reaction.style.left = `${((point.x + 1) * host.clientWidth) / 2 + 32}px`;
+        reaction.style.top = `${((1 - point.y) * host.clientHeight) / 2}px`;
+      }
+      if (step.wakeIn !== null && !tween)
+        animationWake = window.setTimeout(() => {
+          animationWake = 0;
+          requestRender();
+        }, step.wakeIn);
+    }
     renderer.render(scene, camera);
     positionPins();
     positionPerk();
-    if (tween) requestRender();
+    if (tween || animationMoving) requestRender();
   }
   function changed() {
     updateLOD();
@@ -502,11 +542,27 @@ export function createScene(
     controls.update();
     changed();
   }
+  let fullSceneHeight = host.clientHeight;
   function resize() {
     const { width, height } = host.getBoundingClientRect();
     if (!width || !height) return;
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
+    const sheetExpanded = host
+      .parentElement!.parentElement!.querySelector(".panel")
+      ?.classList.contains("expanded");
+    if (!sheetExpanded) fullSceneHeight = height;
+    // Crop the vertical view when the sheet opens, preserving the actor's pixel size.
+    camera.fov =
+      mobile && selectedObservation && sheetExpanded
+        ? THREE.MathUtils.radToDeg(
+            2 *
+              Math.atan(
+                Math.min(1, height / Math.max(height, fullSceneHeight)) *
+                  Math.tan(THREE.MathUtils.degToRad(18)),
+              ),
+          )
+        : 36;
     camera.updateProjectionMatrix();
     requestRender();
     renderPortrait();
@@ -520,6 +576,8 @@ export function createScene(
     else {
       cancelAnimationFrame(frame);
       frame = 0;
+      clearTimeout(animationWake);
+      animator?.pause();
     }
   });
   intersectionObserver.observe(host);
@@ -530,6 +588,8 @@ export function createScene(
       if (document.hidden) {
         cancelAnimationFrame(frame);
         frame = 0;
+        clearTimeout(animationWake);
+        animator?.pause();
       } else {
         requestRender();
         renderPortrait();
@@ -546,6 +606,8 @@ export function createScene(
         tween = null;
         controls.update();
       }
+      clearTimeout(animationWake);
+      requestRender();
     },
     { signal: lifecycle.signal },
   );
@@ -675,7 +737,26 @@ export function createScene(
       rebuildPins();
       changed();
     },
+    clearSelection() {
+      tween = null;
+      clearTimeout(animationWake);
+      animator?.dispose();
+      animator = null;
+      selectedModel.clear();
+      selected.visible = false;
+      selectedObservation = null;
+      reaction.hidden = true;
+      selectionMaterials.forEach((material) => material.dispose());
+      selectionMaterials.clear();
+      rebuildPins();
+      resize();
+      changed();
+    },
     select(observation, fly = false) {
+      clearTimeout(animationWake);
+      animator?.dispose();
+      animator = null;
+      reaction.hidden = true;
       selectedObservation = observation;
       rebuildPins();
       const p = project(observation.longitude, observation.latitude);
@@ -697,6 +778,16 @@ export function createScene(
           selectionMaterials.add(obj.material as THREE.Material);
       });
       selectedModel.add(model);
+      try {
+        animator = createSquirrelAnimator(
+          model,
+          observation,
+          fly && !reducedMotion.matches ? 650 : 0,
+        );
+      } catch (error) {
+        console.warn("Selected squirrel animation unavailable:", error);
+        selectedModel.clear();
+      }
       portraitModel.clear();
       portraitModel.add(resources.create(observation.fur));
       if (!portrait) {
@@ -764,6 +855,10 @@ export function createScene(
     },
     dispose() {
       disposed = true;
+      clearTimeout(animationWake);
+      animator?.dispose();
+      animator = null;
+      reaction.hidden = true;
       cancelAnimationFrame(frame);
       cancelAnimationFrame(portraitFrame);
       lifecycle.abort();

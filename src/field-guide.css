@@ -1694,3 +1694,66 @@
     rotate: 1.5deg;
   }
 }
+.safari .squirrel-reaction {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  color: #684b2b;
+  background: #fbf8f0e6;
+  border: 1px solid #d9c7a7;
+  border-radius: 50% 50% 50% 5%;
+  padding: 3px 7px;
+  font:
+    italic 600 17px Georgia,
+    serif;
+}
+.safari .selected-pin small {
+  max-width: 165px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 760px) {
+  .safari .squirrel-reaction {
+    font-size: 13px;
+    padding: 2px 5px;
+  }
+  .safari .workspace:has(.panel.expanded) .scene {
+    bottom: 61%;
+  }
+  .safari .panel.expanded {
+    max-height: 61%;
+  }
+  .safari .workspace:has(.panel.expanded) .selected-pin {
+    display: none;
+  }
+  .safari .workspace:has(.panel.expanded) .park-intro {
+    display: none;
+  }
+}
+.safari .featured-behaviours {
+  font-size: 9px;
+  line-height: 1.45;
+  margin-bottom: 7px;
+  color: var(--forest);
+}
+.safari .featured-facts > div:nth-child(2) {
+  display: none;
+}
+.safari .featured-facts {
+  grid-template-columns: 1fr 1.2fr;
+}
+@media (max-width: 760px) {
+  .safari .featured-behaviours {
+    font-size: 8px;
+  }
+  .safari .workspace:has(.panel.expanded) .squirrel-reaction {
+    font-size: 11px;
+  }
+}
+@media (max-width: 760px) {
+  .safari .panel.expanded .portrait {
+    height: 120px;
+  }
+}
