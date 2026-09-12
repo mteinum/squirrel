@@ -27,14 +27,16 @@ test("desktop scene, filters, cards, missions, notebook, deep links and sharing"
   await ready(page);
   await page.screenshot({ path: "artifacts/desktop.png" });
   await page
-    .getByRole("combobox", { name: "Fur colour", exact: true })
-    .selectOption("Black");
+    .locator('[data-chips="fur"]')
+    .getByRole("button", { name: "Black", exact: true })
+    .click();
   await expect(page.locator(".matching-number")).toHaveText(
     String(snapshot.observations.filter((o) => o.fur === "Black").length),
   );
   await page
-    .getByRole("combobox", { name: "Behaviour", exact: true })
-    .selectOption("climbing");
+    .locator('[data-chips="behaviour"]')
+    .getByRole("button", { name: "Climbing", exact: true })
+    .click();
   await expect(page.locator(".matching-number")).toHaveText(
     String(
       snapshot.observations.filter(
@@ -42,7 +44,9 @@ test("desktop scene, filters, cards, missions, notebook, deep links and sharing"
       ).length,
     ),
   );
-  await page.getByRole("button", { name: "Surprise me", exact: true }).click();
+  await page.locator('[data-action="surprise"]:visible').first().click();
+  await expect(page.locator(".featured-squirrel")).toBeVisible();
+  await page.locator(".featured-details").click();
   await expect(page.locator("[data-card]")).toContainText("Black");
   await expect(page.locator("[data-card]")).toContainText("Climbing");
   const selectedId = new URL(page.url()).searchParams.get("squirrel")!;
@@ -67,7 +71,7 @@ test("desktop scene, filters, cards, missions, notebook, deep links and sharing"
   );
   await page.screenshot({ path: "artifacts/selected.png" });
   await page
-    .locator(".panel-tabs")
+    .locator(".panel-tabs:visible")
     .getByRole("button", { name: "Notebook" })
     .click();
   await expect(page.locator("[data-notebook] button")).toHaveCount(1);
@@ -76,7 +80,7 @@ test("desktop scene, filters, cards, missions, notebook, deep links and sharing"
   await page.goto("./?squirrel=invalid-id");
   await expect(page.locator(".toast")).toContainText("could not be found");
   await page
-    .locator(".panel-tabs")
+    .locator(".panel-tabs:visible")
     .getByRole("button", { name: "Notebook" })
     .click();
   await page
@@ -130,8 +134,11 @@ test("mobile keeps park and controls available without horizontal overflow", asy
     (await page.locator("[data-scene]").boundingBox())!.height,
   ).toBeGreaterThan(300);
   await page.screenshot({ path: "artifacts/mobile.png" });
-  await page.getByRole("button", { name: "Surprise me", exact: true }).click();
+  await page.locator('[data-action="surprise"]:visible').first().click();
+  await expect(page.locator(".featured-squirrel")).toBeVisible();
+  await page.locator(".featured-details").click();
   await expect(page.locator('[data-pane="observation"]')).toBeVisible();
+  await page.locator('[data-action="sheet"]').click();
   await page.getByRole("button", { name: "Top-down view" }).click();
   await page.getByRole("button", { name: "Reset view", exact: true }).click();
   await page.screenshot({ path: "artifacts/mobile-selected.png" });
@@ -192,7 +199,7 @@ test("all five missions persist and reset", async ({ page }) => {
   await page.reload();
   await expect(page.locator(".mission-count").first()).toHaveText("5/5");
   await page
-    .locator(".panel-tabs")
+    .locator(".panel-tabs:visible")
     .getByRole("button", { name: "Missions" })
     .click();
   await expect(page.locator(".mission-row.complete")).toHaveCount(5);
@@ -211,16 +218,17 @@ test("failed snapshot can retry and reduced motion selection works", async ({
   await page.unroute("**/data/census.json");
   await page.getByRole("button", { name: "Retry loading" }).click();
   await expect(page.locator("[data-scene] canvas")).toBeVisible();
-  await page.getByRole("button", { name: "Surprise me", exact: true }).click();
+  await page.locator('[data-action="surprise"]:visible').first().click();
+  await expect(page.locator(".featured-squirrel")).toBeVisible();
+  await page.locator(".featured-details").click();
   await expect(page.locator('[data-pane="observation"]')).toBeVisible();
 });
 test("a visible marker selects a real record, while dragging does not select", async ({
   page,
 }) => {
   await ready(page);
-  // A visible cluster on the lower lake's south bank in the verified default desktop view.
-  await page.mouse.click(412, 665);
-  await expect(page.locator('[data-pane="observation"]')).toBeVisible();
+  await page.locator(".squirrel-pin:visible").first().click();
+  await expect(page.locator(".featured-squirrel")).toBeVisible();
   const id = new URL(page.url()).searchParams.get("squirrel");
   expect(snapshot.observations.some((o) => o.id === id)).toBe(true);
   const before = page.url();
@@ -296,6 +304,7 @@ test("mount cleanup releases canvases, observers and queued frames, and supports
       .click();
     await expect(page.locator("#fixture [data-scene] canvas")).toBeVisible();
     await page.locator('#fixture [data-action="surprise"]:visible').click();
+    await page.locator("#fixture .featured-details").click();
     await expect(page.locator("#fixture [data-portrait] canvas")).toBeVisible();
     await page
       .getByRole("button", { name: "Unmount experience", exact: true })

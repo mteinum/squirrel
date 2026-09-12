@@ -19,7 +19,9 @@ import {
   renderCard,
   observationButton,
   acorn,
+  dateLabel,
 } from "./ui";
+import { nickname, squirrelActivity, countMessage } from "./field-guide";
 import type { SafariScene } from "./scene/scene";
 import { createCelebration } from "./celebration";
 export interface MountOptions {
@@ -39,6 +41,9 @@ export function mountSquirrelSafari(
     state: SafariState | null = null;
   let page = 0,
     toastTimer = 0,
+    radarTimer = 0,
+    visionTimer = 0,
+    vision = false,
     matchesCache: Observation[] = [];
   const pageSize = 20;
   const get = <T extends HTMLElement>(selector: string) =>
@@ -63,6 +68,7 @@ export function mountSquirrelSafari(
     }, 6500);
   }
   function setView(next: string, focus = false) {
+    if (next === "observation" && !state?.selected) return;
     all<HTMLElement>("[data-pane]").forEach((pane) => {
       pane.hidden = pane.dataset.pane !== next;
     });
@@ -75,11 +81,127 @@ export function mountSquirrelSafari(
       button.setAttribute("aria-pressed", String(active));
     });
     get(".panel-scroll").scrollTop = 0;
+    if (matchMedia("(max-width: 760px)").matches) setSheet(true);
     if (focus) {
       const title = get<HTMLElement>(`[data-pane="${next}"] h2`);
       title.tabIndex = -1;
       title.focus({ preventScroll: true });
     }
+  }
+  function setSheet(expanded: boolean) {
+    get(".panel").classList.toggle("expanded", expanded);
+    get('[data-action="sheet"]').setAttribute(
+      "aria-expanded",
+      String(expanded),
+    );
+    get("[data-sheet-label]").textContent = expanded
+      ? "Close field kit"
+      : "Open field kit";
+    get(".notebook-content").inert =
+      matchMedia("(max-width: 760px)").matches && !expanded;
+    get(".park").inert = matchMedia("(max-width: 760px)").matches && expanded;
+  }
+  const mobileQuery = matchMedia("(max-width: 760px)");
+  mobileQuery.addEventListener(
+    "change",
+    () => setSheet(get(".panel").classList.contains("expanded")),
+    { signal },
+  );
+  setSheet(false);
+
+  function syncChips() {
+    if (!state) return;
+    all<HTMLButtonElement>("[data-filter]").forEach((button) => {
+      const name = button.dataset.filter as
+        "fur" | "behaviour" | "shift" | "date";
+      button.setAttribute(
+        "aria-pressed",
+        String(state!.filters[name] === button.dataset.value),
+      );
+    });
+    all<HTMLSelectElement>(".filters select").forEach((select) => {
+      const value =
+        state!.filters[select.name as "fur" | "behaviour" | "shift" | "date"];
+      select.value = value;
+      const row = select.closest(".filter-row")!;
+      const quick = Array.from(
+        row.querySelectorAll<HTMLElement>("[data-value]"),
+      ).some((button) => button.dataset.value === value);
+      const summary = row.querySelector("summary")!;
+      summary.classList.toggle("selected", !quick);
+      summary.textContent = quick
+        ? "+"
+        : `✓ ${select.selectedOptions[0]?.textContent ?? value}`;
+    });
+  }
+  function buildChips() {
+    const choices: Record<string, string[]> = {
+      fur: ["", "Gray", "Cinnamon", "Black"],
+      behaviour: ["", "eating", "running", "climbing"],
+      shift: ["", "AM", "PM"],
+      date: [
+        "",
+        ...Array.from(get<HTMLSelectElement>('select[name="date"]').options)
+          .slice(1, 3)
+          .map((option) => option.value),
+      ],
+    };
+    Object.entries(choices).forEach(([name, values]) => {
+      const chips = get(`[data-chips="${name}"]`);
+      chips.replaceChildren();
+      const select = get<HTMLSelectElement>(`select[name="${name}"]`);
+      values
+        .filter((value) =>
+          Array.from(select.options).some((option) => option.value === value),
+        )
+        .forEach((value) => {
+          const text = value
+            ? name === "date"
+              ? dateLabel(value).replace(", 2018", "")
+              : label(value)
+            : name === "date"
+              ? "All dates"
+              : name === "behaviour"
+                ? "Any"
+                : "All";
+          const button = element("button", "filter-chip", text);
+          button.type = "button";
+          button.dataset.filter = name;
+          button.dataset.value = value;
+          button.setAttribute("aria-pressed", "false");
+          chips.append(button);
+        });
+    });
+    syncChips();
+  }
+  function showFeatured(observation: Observation) {
+    const activity = squirrelActivity(observation);
+    get(".featured-squirrel").hidden = false;
+    get(".park").classList.add("has-selection");
+    get("[data-nickname]").textContent = nickname(observation);
+    get("[data-featured-note]").textContent = activity.note;
+    get(".featured-illustration").setAttribute(
+      "data-fur",
+      observation.fur ?? "Unknown",
+    );
+    const facts = get("[data-featured-facts]");
+    facts.replaceChildren();
+    [
+      ["Fur colour", observation.fur ?? "Unknown"],
+      ["Behaviour", activity.label],
+      [
+        "Spotted",
+        observation.location ? label(observation.location) : "Not recorded",
+      ],
+    ].forEach(([name, value]) => {
+      const group = element("div");
+      group.append(element("dt", "", name), element("dd", "", value));
+      facts.append(group);
+    });
+    if (state && !matches(observation, state.filters))
+      facts.append(
+        element("p", "featured-filtered", "Outside your current filters"),
+      );
   }
   function persist() {
     if (!state) return;
@@ -104,6 +226,17 @@ export function mountSquirrelSafari(
       node.textContent = String(state!.discovered.size);
     });
     get<HTMLProgressElement>("progress").value = complete.size;
+    get("[data-progress-label]").textContent = `${complete.size} of 5`;
+    const acorns = get("[data-acorns]");
+    acorns.replaceChildren();
+    missions.forEach((mission) => {
+      const badge = element(
+        "span",
+        complete.has(mission.id) ? "collected" : "",
+      );
+      badge.innerHTML = acorn;
+      acorns.append(badge);
+    });
     const missionHost = get("[data-missions]");
     missionHost.replaceChildren();
     missions.forEach((mission, i) => {
@@ -172,19 +305,34 @@ export function mountSquirrelSafari(
     matchesCache = state.matching;
     scene?.setObservations(matchesCache);
     get(".matching-number").textContent = matchesCache.length.toLocaleString();
+    get("[data-mobile-count]").textContent =
+      matchesCache.length.toLocaleString();
+    get("[data-count-message]").textContent = countMessage(matchesCache.length);
+    get("[data-vision-count]").textContent =
+      `${matchesCache.length.toLocaleString()} potential targets detected`;
+    get("[data-search-active]").hidden = !state.filters.query;
+    syncChips();
     get("[data-empty]").hidden = matchesCache.length > 0;
     all<HTMLButtonElement>('[data-action="surprise"]').forEach((b) => {
       b.disabled = !matchesCache.length;
     });
     renderList();
-    if (state.selected)
+    if (state.selected) {
       renderCard(
         get("[data-card]"),
         state.selected,
         !matches(state.selected, state.filters),
       );
+      if (!get(".featured-squirrel").hidden) showFeatured(state.selected);
+    }
   }
-  function select(id: string, fly = true, changeUrl = true, focus = true) {
+  function select(
+    id: string,
+    fly = true,
+    changeUrl = true,
+    focus = true,
+    details = true,
+  ) {
     if (!state) return;
     const before = state.completed;
     const observation = state.select(id);
@@ -201,7 +349,12 @@ export function mountSquirrelSafari(
       observation,
       !matches(observation, state.filters),
     );
-    setView("observation", focus);
+    showFeatured(observation);
+    if (details) setView("observation", focus);
+    else if (focus)
+      get<HTMLButtonElement>(".featured-details").focus({
+        preventScroll: true,
+      });
     scene?.select(observation, fly);
     if (changeUrl) {
       const url = new URL(location.href);
@@ -284,7 +437,37 @@ export function mountSquirrelSafari(
         select(target.dataset.observation);
         return;
       }
+      if (target.dataset.filter && state) {
+        state.filters[
+          target.dataset.filter as "fur" | "behaviour" | "shift" | "date"
+        ] = target.dataset.value ?? "";
+        page = 0;
+        updateMatches();
+        return;
+      }
       switch (target.dataset.action) {
+        case "sheet":
+          setSheet(!get(".panel").classList.contains("expanded"));
+          break;
+        case "close-featured":
+          get(".featured-squirrel").hidden = true;
+          get(".park").classList.remove("has-selection");
+          get<HTMLButtonElement>('[data-action="vision"]').focus({
+            preventScroll: true,
+          });
+          break;
+        case "vision":
+          vision = !vision;
+          target.setAttribute("aria-pressed", String(vision));
+          get(".park").classList.toggle("squirrel-vision", vision);
+          scene?.setVision(vision);
+          get(".vision-message").hidden = !vision;
+          clearTimeout(visionTimer);
+          if (vision)
+            visionTimer = window.setTimeout(() => {
+              get(".vision-message").hidden = true;
+            }, 3500);
+          break;
         case "reset-view":
           scene?.reset();
           break;
@@ -304,10 +487,32 @@ export function mountSquirrelSafari(
           clear();
           break;
         case "surprise": {
-          if (matchesCache.length)
+          if (matchesCache.length) {
             select(
               matchesCache[Math.floor(Math.random() * matchesCache.length)].id,
+              true,
+              true,
+              false,
+              mobileQuery.matches &&
+                get(".panel").classList.contains("expanded"),
             );
+            clearTimeout(radarTimer);
+            const travelling =
+              scene && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+            get("[data-radar]").textContent = travelling
+              ? "Deploying squirrel radar…"
+              : "Squirrel located. Field trip successful.";
+            get(".radar-status").classList.toggle(
+              "searching",
+              Boolean(travelling),
+            );
+            if (travelling)
+              radarTimer = window.setTimeout(() => {
+                get("[data-radar]").textContent =
+                  "Squirrel located. Field trip successful.";
+                get(".radar-status").classList.remove("searching");
+              }, 650);
+          }
           break;
         }
         case "share":
@@ -352,6 +557,11 @@ export function mountSquirrelSafari(
         target.value;
       page = 0;
       updateMatches();
+      const more = target.closest("details");
+      if (more) {
+        more.open = false;
+        more.querySelector("summary")?.focus({ preventScroll: true });
+      }
       notify(
         `${matchesCache.length.toLocaleString()} observations match your filters.`,
       );
@@ -373,7 +583,7 @@ export function mountSquirrelSafari(
   window.addEventListener("popstate", readLink, { signal });
   async function load() {
     status.hidden = false;
-    status.textContent = "Unfolding the park…";
+    status.textContent = "Asking the squirrels where they are…";
     all<HTMLButtonElement>('[data-action="surprise"]').forEach((b) => {
       b.disabled = true;
     });
@@ -434,8 +644,21 @@ export function mountSquirrelSafari(
         [
           ...new Set(snapshot.observations.map((o) => o.date ?? "Unknown")),
         ].sort(),
+        dateLabel,
       );
       fillOptions("behaviour", [...behaviourKeys], label);
+      buildChips();
+      const legend = get(".legend");
+      legend.replaceChildren();
+      [...new Set(snapshot.observations.map((o) => o.fur ?? "Unknown"))]
+        .sort()
+        .forEach((fur) => {
+          const item = element("span");
+          const dot = element("i", `fur-dot ${fur.toLowerCase()}`);
+          dot.setAttribute("aria-hidden", "true");
+          item.append(dot, document.createTextNode(fur));
+          legend.append(item);
+        });
       get("[data-provenance]").textContent =
         `Snapshot retrieved ${snapshot.metadata.retrievedAt.slice(0, 10)}. ${snapshot.metadata.count.toLocaleString()} observations; ${snapshot.metadata.rejectedCoordinates} invalid coordinates rejected. Repeated source IDs are retained with distinct share links.`;
       updateMatches();
@@ -456,11 +679,13 @@ export function mountSquirrelSafari(
           scene = sceneModule.createScene(
             get("[data-scene]"),
             park,
-            (id) => select(id, false),
+            (id) => select(id, false, true, true, false),
             webglFailure,
             get("[data-portrait]"),
           );
           scene.setObservations(matchesCache);
+          scene.setVision(vision);
+          if (state.selected) scene.select(state.selected, true);
         } catch (error) {
           if (disposed) return;
           console.warn("3D park unavailable:", error);
@@ -492,6 +717,8 @@ export function mountSquirrelSafari(
     disposed = true;
     abort.abort();
     clearTimeout(toastTimer);
+    clearTimeout(radarTimer);
+    clearTimeout(visionTimer);
     celebration.dispose();
     scene?.dispose();
     scene = null;

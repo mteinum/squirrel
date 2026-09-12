@@ -3,12 +3,14 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { project, insidePolygon } from "../data/geo";
 import type { Observation, ParkData } from "../data/types";
 import { furColours, squirrelResources } from "./squirrel";
+import { nickname, squirrelActivity } from "../field-guide";
 export interface SafariScene {
   setObservations(observations: Observation[]): void;
   select(observation: Observation, fly?: boolean): void;
   reset(): void;
   topDown(): void;
   zoom(factor: number): void;
+  setVision(enabled: boolean): void;
   dispose(): void;
 }
 export function createScene(
@@ -219,6 +221,87 @@ export function createScene(
   floor.receiveShadow = true;
   scene.add(floor);
   const resources = squirrelResources();
+  // Reuse the existing materials and instanced markers; vision adds no render loop.
+  const environmentColours = new Map<THREE.MeshStandardMaterial, THREE.Color>();
+  scene.traverse((object) => {
+    if (object instanceof THREE.Mesh) {
+      for (const material of Array.isArray(object.material)
+        ? object.material
+        : [object.material]) {
+        if (
+          material instanceof THREE.MeshStandardMaterial &&
+          !environmentColours.has(material)
+        )
+          environmentColours.set(material, material.color.clone());
+      }
+    }
+  });
+  let vision = false;
+  const pinHost =
+    host.parentElement!.querySelector<HTMLElement>("[data-pins]")!;
+  let pins: { observation: Observation; button: HTMLButtonElement }[] = [];
+  function createPin(observation: Observation, active = false) {
+    const button = document.createElement("button");
+    button.className = `squirrel-pin${active ? " selected-pin" : ""}`;
+    button.setAttribute(
+      "aria-label",
+      `Observe ${nickname(observation)} · ${observation.observationId}`,
+    );
+    button.innerHTML =
+      '<span class="pin-acorn" aria-hidden="true"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M8 14h16c0 9-5 13-8 15-4-2-8-6-8-15ZM5 13c0-10 22-10 22 0H5Zm10-7V2h3v4Z"/></svg></span>';
+    if (active) {
+      const text = document.createElement("span");
+      const title = document.createElement("strong");
+      title.textContent = nickname(observation);
+      const subtitle = document.createElement("small");
+      subtitle.textContent = `${squirrelActivity(observation).label} →`;
+      text.append(title, subtitle);
+      button.append(text);
+    }
+    button.addEventListener("click", () => onSelect(observation.id));
+    pinHost.append(button);
+    return { observation, button };
+  }
+  function rebuildPins() {
+    pinHost.replaceChildren();
+    pins = [];
+    // A few representative pins aid discovery; every record retains its real 3D marker.
+    const sorted = [...observations].sort((a, b) => a.latitude - b.latitude);
+    const count = Math.min(7, sorted.length);
+    for (let i = 0; i < count; i++) {
+      const observation =
+        sorted[Math.floor(((i + 0.5) * sorted.length) / count)];
+      if (observation.id !== selectedObservation?.id)
+        pins.push(createPin(observation));
+    }
+    if (selectedObservation) pins.unshift(createPin(selectedObservation, true));
+  }
+  function positionPins() {
+    const positions: { x: number; y: number }[] = [];
+    for (const { observation, button } of pins) {
+      const p = project(observation.longitude, observation.latitude);
+      const screen = new THREE.Vector3(p.x, 5, p.z).project(camera);
+      const x = ((screen.x + 1) * host.clientWidth) / 2;
+      const y = ((1 - screen.y) * host.clientHeight) / 2;
+      const blocked = positions.some(
+        (p) => Math.hypot(x - p.x, y - p.y) < (mobile ? 65 : 95),
+      );
+      const show =
+        screen.z >= -1 &&
+        screen.z <= 1 &&
+        x > 25 &&
+        x < host.clientWidth - 70 &&
+        y > (mobile ? 115 : 190) &&
+        y < host.clientHeight - (mobile ? 215 : 100) &&
+        !blocked;
+      button.hidden = !show;
+      if (show) {
+        button.style.left = `${x}px`;
+        button.style.top = `${y}px`;
+        positions.push({ x, y });
+      }
+    }
+  }
   const selectionMaterials = new Set<THREE.Material>();
   let portraitFrame = 0;
   const markerGeometry = new THREE.SphereGeometry(1, 8, 6);
@@ -288,7 +371,7 @@ export function createScene(
       const p = project(o.longitude, o.latitude);
       dummy.position.set(p.x, 1.4, p.z);
       dummy.rotation.set(0, 0, 0);
-      dummy.scale.setScalar(size);
+      dummy.scale.setScalar(size * (vision ? 1.65 : 1));
       dummy.updateMatrix();
       markers.setMatrixAt(i, dummy.matrix);
     });
@@ -338,6 +421,7 @@ export function createScene(
       controls.update();
     }
     renderer.render(scene, camera);
+    positionPins();
     if (tween) requestRender();
   }
   function changed() {
@@ -361,9 +445,24 @@ export function createScene(
   function reset() {
     tween = null;
     controls.target.set(0, 0, 0);
-    camera.position
-      .set(230, 320, 320)
-      .multiplyScalar(host.clientWidth < 600 ? 1.55 : 1.42);
+    camera.position.set(230, 320, 320).multiplyScalar(1.15);
+    camera.lookAt(controls.target);
+    camera.updateMatrixWorld();
+    // Fit the real park outline to narrow screens as well as wide canvases.
+    // Leave a little room for the field-guide overlays without changing geography.
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const points = polygons
+        .flatMap((poly) => poly[0])
+        .map((p) => new THREE.Vector3(p.x, 0, p.z).project(camera));
+      const extent = Math.max(
+        ...points.map((p) =>
+          Math.max(Math.abs(p.x) / 0.88, Math.abs(p.y) / 0.75),
+        ),
+      );
+      if (extent <= 1.01) break;
+      camera.position.multiplyScalar(Math.min(extent, 1.3));
+      camera.updateMatrixWorld();
+    }
     controls.update();
     changed();
   }
@@ -499,20 +598,50 @@ export function createScene(
   resize();
   reset();
   return {
+    setVision(enabled) {
+      vision = enabled;
+      environmentColours.forEach((original, material) => {
+        material.color.copy(original);
+        if (enabled) {
+          const grey = (original.r + original.g + original.b) / 3;
+          material.color
+            .lerp(new THREE.Color(grey, grey, grey), 0.65)
+            .multiplyScalar(0.62);
+        }
+      });
+      observations.forEach((o, i) =>
+        markers.setColorAt(
+          i,
+          new THREE.Color(
+            enabled
+              ? 0xffe5a1
+              : (furColours[o.fur ?? "Unknown"] ?? furColours.Unknown),
+          ),
+        ),
+      );
+      if (markers.instanceColor) markers.instanceColor.needsUpdate = true;
+      changed();
+    },
     setObservations(list) {
       observations = list;
       markers.count = list.length;
       list.forEach((o, i) =>
         markers.setColorAt(
           i,
-          new THREE.Color(furColours[o.fur ?? "Unknown"] ?? furColours.Unknown),
+          new THREE.Color(
+            vision
+              ? 0xffe5a1
+              : (furColours[o.fur ?? "Unknown"] ?? furColours.Unknown),
+          ),
         ),
       );
       if (markers.instanceColor) markers.instanceColor.needsUpdate = true;
+      rebuildPins();
       changed();
     },
     select(observation, fly = false) {
       selectedObservation = observation;
+      rebuildPins();
       const p = project(observation.longitude, observation.latitude);
       selected.position.set(p.x, 0, p.z);
       selected.visible = true;
@@ -626,6 +755,7 @@ export function createScene(
       renderer.dispose();
       renderer.forceContextLoss();
       renderer.domElement.remove();
+      pinHost.replaceChildren();
       portrait?.dispose();
       portrait?.forceContextLoss();
       portrait?.domElement.remove();

@@ -25,6 +25,8 @@ const blackClimber = observations.find(
 )!;
 
 async function selectFromList(page: Page, id: string) {
+  if (await page.locator('.sheet-handle[aria-expanded="true"]').isVisible())
+    await page.locator(".sheet-handle").click();
   await page
     .getByRole("button", { name: "Observation list", exact: true })
     .click();
@@ -127,7 +129,7 @@ test("reduced motion keeps a static reward without WebGL and resetting allows ea
     path: "artifacts/badge-celebration-reduced-motion.png",
   });
   await page
-    .locator(".panel-tabs")
+    .locator(".panel-tabs:visible")
     .getByRole("button", { name: "Notebook" })
     .click();
   await page

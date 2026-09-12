@@ -1,10 +1,10 @@
 # Squirrel Safari
 
-A standalone autumn diorama of the **2018 Central Park Squirrel Census**. Explore real sighting locations, open field notes, filter the census, collect five discovery acorns and keep a local notebook. A searchable, paginated index provides the same observations without WebGL.
+A warm, playful **Tiny Ranger Field Guide** to the **2018 Central Park Squirrel Census**, built around an interactive autumn diorama. Explore real sighting locations, open field notes, filter the census, collect five discovery acorns and keep a local notebook. A searchable, paginated index provides the same observations without WebGL.
 
 Built with Vite, strict TypeScript, Three.js and native HTML controls. No React, backend or account. Census data is bundled locally; optional Google Analytics loads only after visitor consent.
 
-![Squirrel Safari showing the autumnal Central Park diorama and observation filters](artifacts/desktop.png)
+![Squirrel Safari with the Central Park diorama and field notebook](artifacts/field-guide-1440.png)
 
 ## Run locally
 
@@ -25,6 +25,18 @@ npm run preview
 ```
 
 Preview opens at **http://127.0.0.1:4173/**. Builds and ordinary browsing use the bundled snapshots, with no census API request. Install dependencies once before offline development; this is not an offline service-worker app.
+
+## Tiny Ranger Field Guide
+
+The desktop park occupies 72% of the workspace, alongside a paper-toned notebook. On mobile, the notebook becomes an expandable bottom sheet. Explore, Field Notes, Missions and Notebook share the same observation state.
+
+- **Field Kit:** quick chips for common coats, behaviours, shifts and dates. Each `+` reveals the complete original filter. All choices combine with the observation index search; Reset clears them together.
+- **Find me a squirrel:** selects a real observation from the current results and moves the existing camera to it. The floating card shows its recorded coat, activity and location; open the field observation for all flags, observer notes and sharing.
+- **Field nicknames:** deterministic aliases derived from internal observation IDs, displayed as playful nicknames. They are never written into census records or saved as animal identities.
+- **Squirrel Vision:** dims the scene materials and highlights matching instanced markers. At most eight interactive acorn pins help with discovery; the complete census remains available through the existing markers and index. Vision requires no continuous render loop.
+- **Acorn progress:** uses the five existing missions and the existing local notebook storage. No account or new dependencies.
+
+Theme tokens and responsive layouts live in `src/field-guide.css`. Presentation helpers live in `src/field-guide.ts`. Reduced-motion settings skip camera travel; chips expose their selected state, advanced filters retain keyboard focus, and a collapsed mobile sheet removes its contents from the tab order.
 
 ## Refresh the bundled data
 
@@ -76,7 +88,8 @@ At wide zoom, every matching record has an instanced colour marker. Dense/overla
 - `src/analytics.ts`, `analytics-consent.ts`: standalone-page Google Analytics and defensive, expiring consent storage. Analytics is separate from the embeddable application and disabled in the normal development entry point.
 - `src/celebration.ts`: brief badge rewards using native browser animations, with capped acorn/leaf/spark particles and a static reduced-motion alternative. Newly earned missions trigger rewards; restored or repeated discoveries do not. Multiple badges share one reward, and the fifth badge completes the trail. Escape, reset, tab hiding and cleanup cancel the effect.
 - `src/scene/scene.ts`, `squirrel.ts`: lazy-loaded Three.js scene, shared procedural resources, instancing, raycasting, camera and portrait.
-- `src/styles.css`: experience styles; `src/standalone.css`: standalone page reset.
+- `src/styles.css`: shared experience styles, importing `src/field-guide.css` for the notebook theme and responsive layouts; `src/standalone.css`: standalone page reset.
+- `src/field-guide.ts`: stable nicknames, human-readable labels, activity captions and result-count copy.
 
 The scene caps pixel ratio (2 desktop / 1.5 mobile), reduces mobile decorations, renders on demand, pauses when hidden/offscreen, and limits its animation to camera transitions. Badge celebrations are separate DOM overlays lasting under four seconds, with at most 44 particles (20 on compact park views) and no render loop. Reduced-motion preferences skip transitions and display a stationary reward card. Cleanup aborts fetches and DOM listeners, removes camera/media/visibility listeners, disconnects resize/intersection observers, cancels frame callbacks, timers and reward animations, and disposes controls, instances, geometry, materials, shadow maps and both WebGL renderers/contexts.
 
@@ -115,9 +128,11 @@ npm run test:browser
 
 The suite uses an isolated Chromium profile and software WebGL, not your regular browser profile. It covers desktop/mobile layout, selection, filtering, clipboard/deep links, all five missions, local persistence/reset, keyboard index access, pagination, reduced motion, failed-data retry and forced WebGL/storage/clipboard failures. Screenshots are written to `artifacts/`.
 
-The Three.js scene is a lazy chunk of about 570 kB (148 kB gzip); Vite reports its standard 500 kB advisory. The accessible interface loads separately. Real-device Safari/iOS and assistive-technology testing are still recommended before moving this prototype into the main site.
+The Three.js scene is a lazy chunk of about 597 kB (153 kB gzip); Vite reports its standard 500 kB advisory. The accessible interface loads separately. Real-device Safari/iOS and assistive-technology testing are still recommended before moving this prototype into the main site.
 
 ## Validation record
+
+The field-guide redesign was checked on 2026-09-12 with the production build, 15 unit/deployment tests and all 24 Chromium browser tests, including layouts at 1440×1000, 1280×800 and 390×844 (plus the existing 320px check). Additional scenarios exercise every filter through the advanced controls, filtered random selection, generated names, empty results, mobile sheet keyboard operation and Squirrel Vision returning to idle rendering. Review screenshots are saved as `artifacts/field-guide-*.png`.
 
 Validated locally on 2026-09-11: strict TypeScript checking, eight data/state tests, ten Chromium browser scenarios, and a separate production smoke test at `/squirrels/`. Normal scene and deep-link checks reported no browser errors or missing assets. Forced-failure scenarios intentionally produce diagnostic warnings. Desktop (1440×1000), mobile (390×844), and narrow mobile (320×640) were exercised; screenshots are in `artifacts/`. Mount/remount testing checks that canvases, observed targets and scheduled frames are released.
 
